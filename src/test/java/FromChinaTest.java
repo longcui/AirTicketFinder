@@ -1,4 +1,3 @@
-import junit.framework.TestCase;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import travelBetweenDates.FromChina;
@@ -16,7 +15,7 @@ import java.util.Locale;
 /**
  * Created by Longcui on 17.04.2015.
  */
-public class FromChinaTest extends TestCase {
+public class FromChinaTest {
 
     public void testDate() {
         Calendar start = Calendar.getInstance();

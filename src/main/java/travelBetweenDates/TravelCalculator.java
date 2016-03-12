@@ -65,8 +65,8 @@ public abstract class TravelCalculator {
 //        start.set(2016, 8, 1);     //
 //        end.set(2016, 11, 31);        //
 
-        start.set(2016, 1, 1);     //
-        end.set(2015, 11, 31);        //
+        start.set(2017, 1, 1);     //
+        end.set(2017, 11, 31);        //
 
         while (true) {
             Calendar lastPossibleDayToGo = Calendar.getInstance();
