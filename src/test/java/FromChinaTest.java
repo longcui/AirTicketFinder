@@ -1,6 +1,6 @@
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import travel.FromChina;
+import travel.finnAndMomodo.FromChina;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

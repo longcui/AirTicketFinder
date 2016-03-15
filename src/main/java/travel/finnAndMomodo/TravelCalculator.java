@@ -25,9 +25,7 @@ public abstract class TravelCalculator {
     private static WebDriver driver = new FirefoxDriver();
 
     private static final String FROM_CITY = "SVG";
-    //    private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com", "newrala@gmail.com"};
-    private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com"};
-    private static String[] DEBUG_EMAILS = new String[]{"dragonworld1988@gmail.com"};
+
     private static double momondoPrice;
     private static double unspecificPrice;
     private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
@@ -57,13 +55,9 @@ public abstract class TravelCalculator {
     private static boolean enableSavingToExcel = true;
 
     public static void main(String[] args) throws Exception {
-//        start.set(2016, 0, 16);     //
-//        end.set(2016, 2, 5);        //
+//        start.set(2016, 0, 16);     // Jan!
         springFestivalStart.set(2016, 1, 8);
         springFestivalEnd.set(2016, 1, 15);
-
-//        start.set(2016, 8, 1);     //
-//        end.set(2016, 11, 31);        //
 
         start.set(2017, 1, 1);     //
         end.set(2017, 11, 31);        //
@@ -118,19 +112,19 @@ public abstract class TravelCalculator {
                         }
                     }
                     to.add(Calendar.DAY_OF_MONTH, 1);
-                    sleep(DEBUG_SLEEP_TIME);
+//                    sleep(DEBUG_SLEEP_TIME);
                 }
                 if(enableSavingToExcel && fromCities.size() > 0) {
-                    writeToExcel();
+                    writeToExcel(from);
                 }
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
     }
 
-    private static void writeToExcel() {
+    private static void writeToExcel(Calendar from) {
         try {
-            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-M-yyyy hh").format(new Date()) + ".xls");
+            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-MMM-yyyy").format(from) + ".xls");
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
 
@@ -226,11 +220,11 @@ public abstract class TravelCalculator {
         double thresholdPrice = 0;
         switch (travelType) {
             case 0: {
-                thresholdPrice = 3000;
+                thresholdPrice = 4000;
                 break;
             }
             case 1: {
-                thresholdPrice = 2500;
+                thresholdPrice = 3000;
                 break;
             }
             case 2: {
@@ -252,9 +246,9 @@ public abstract class TravelCalculator {
 
     private static void handleNotifications(double price, double thresholdPrice, String subject, String url) {
         if (price < thresholdPrice) {
-            String[] es = EMAILS;
+            String[] es = Credential.EMAILS;
             if (logger.isDebugEnabled()) {
-                es = DEBUG_EMAILS;
+                es = Credential.DEBUG_EMAILS;
             }
 
             for (String email : es) {
@@ -264,8 +258,6 @@ public abstract class TravelCalculator {
     }
 
     private static void sendEmail(String recipient, String subject, String url) {
-        final String username = "longcuidev@gmail.com";
-        final String password = "clclzpzp";
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -276,14 +268,14 @@ public abstract class TravelCalculator {
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
+                        return new PasswordAuthentication(Credential.DEV_EMAIL, Credential.DEV_EMAIL_PASSWORD);
                     }
                 });
 
         try {
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("longcuidev@gmail.com"));
+            message.setFrom(new InternetAddress(Credential.DEV_EMAIL));
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(recipient));
             message.setSubject(subject);
@@ -336,16 +328,16 @@ public abstract class TravelCalculator {
         SHANGHAI("SHA", 1),
         BEIJING("BJS", 1),
         HANGZHOU("HGH", 1),
-        WUHAN("WUH", 1),
+        WUHAN("WUH", 1);
 
-        GUANGZHOU("CAN", 2),
-        CHENGDU("CTU", 2),
-        SHENYANG("SHE", 2),
-        SHENZHEN("SZX", 2),
-        XIAMEN("XMN", 2),      //KLM
-
-        TAIPEI("TPE", 3),
-        HONGKONG("HKG", 3);
+//        GUANGZHOU("CAN", 2),
+//        CHENGDU("CTU", 2),
+//        SHENYANG("SHE", 2),
+//        SHENZHEN("SZX", 2),
+//        XIAMEN("XMN", 2),      //KLM
+//
+//        TAIPEI("TPE", 3),
+//        HONGKONG("HKG", 3);
 
         private String code;
         private int travelType;
@@ -369,18 +361,18 @@ public abstract class TravelCalculator {
         SHANGHAI("SHA.METROPOLITAN_AREA", 1),
         BEIJING("BJS.METROPOLITAN_AREA", 1),
         HANGZHOU("HGH.AIRPORT", 1),
-        WUHAN("WUH.AIRPORT", 1),
+        WUHAN("WUH.AIRPORT", 1);
 
 
-        XIAN("XIY.AIRPORT", 2),
-        CHENGDU("CTU.AIRPORT", 2),
-        SHENYANG("SHE.AIRPORT", 2),
-        SHENZHEN("SZX.AIRPORT", 2),
-        GUANGZHOU("CAN.AIRPORT", 2),
-        XIAMEN("XMN.AIRPORT", 2),      //KLM
-
-        TAIPEI("TPE.METROPOLITAN_AREA", 3),
-        HONGKONG("HKG.AIRPORT", 3);
+//        XIAN("XIY.AIRPORT", 2),
+//        CHENGDU("CTU.AIRPORT", 2),
+//        SHENYANG("SHE.AIRPORT", 2),
+//        SHENZHEN("SZX.AIRPORT", 2),
+//        GUANGZHOU("CAN.AIRPORT", 2),
+//        XIAMEN("XMN.AIRPORT", 2),      //KLM
+//
+//        TAIPEI("TPE.METROPOLITAN_AREA", 3),
+//        HONGKONG("HKG.AIRPORT", 3);
 
         ;
 //        Paris("PAR"),
