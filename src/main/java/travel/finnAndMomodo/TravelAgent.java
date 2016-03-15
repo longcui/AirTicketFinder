@@ -1,4 +1,4 @@
-package travelBetweenDates;
+package travel.finnAndMomodo;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;

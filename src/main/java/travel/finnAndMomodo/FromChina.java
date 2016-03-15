@@ -1,4 +1,4 @@
-package travelBetweenDates;
+package travel.finnAndMomodo;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
@@ -6,8 +6,6 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -16,8 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
