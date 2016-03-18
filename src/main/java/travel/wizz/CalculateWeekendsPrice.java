@@ -85,7 +85,7 @@ public class CalculateWeekendsPrice {
 
             int total1 = this.getFromPrice() + this.getToPrice();
             int total2 = o22.getFromPrice() + o22.getToPrice();
-            return  total1 > total2 ? 1 : -1;
+            return  total1 > total2 ? -1 : 1;
         }
     }
 
