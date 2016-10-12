@@ -93,7 +93,7 @@ public class TravelAgent {
                 //            logger.info("price is: " + price);
                 //        }
                 String price = webElement.getText();
-                NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+                NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
                 try {
                     return numberFormat.parse(price).doubleValue() * 1000;
                 } catch (ParseException e) {
