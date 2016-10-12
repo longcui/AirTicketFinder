@@ -34,8 +34,8 @@ public class FromChina {
     private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
     private static int DEBUG_SLEEP_TIME = 5 * 1000;  //30sec
 
-    private static int MINIMAL_STAY_DAY = 13;
-    private static int MAXIMAL_STAY_DAY = 18;
+    private static int MINIMAL_STAY_DAY = 28;
+    private static int MAXIMAL_STAY_DAY = 35;
 
 
     private final static Calendar start = Calendar.getInstance();
@@ -53,8 +53,9 @@ public class FromChina {
     private static WebDriver driver = new FirefoxDriver();
 
     public static void main(String[] args) throws Exception {
-        start.set(2015, 7, 6);     //july
-        end.set(2015, 8, 2);        //Sep
+        //month: 0: jan
+        start.set(2016, 7, 12);
+        end.set(2015, 8, 17);
 
         while (true) {
             Calendar lastPossibleLeaveDay = Calendar.getInstance();
@@ -287,11 +288,11 @@ public class FromChina {
     }
 
     public enum MomondoCountry {
-        SHANGHAI("SHA"),
-        BEIJING("BJS"),
+//        SHANGHAI("SHA"),
+        BEIJING("BJS");
 //        XIAN("SIA"),
 //        GUANGZHOU("CAN"),
-        NANJING("NKG");
+//        NANJING("NKG");
 
         private String code;
         private MomondoCountry (String code) {
@@ -304,11 +305,11 @@ public class FromChina {
     }
 
     public enum FinnPlace {
-        SHANGHAI("SHA.METROPOLITAN_AREA"),
-        BEIJING("BJS.METROPOLITAN_AREA"),
+//        SHANGHAI("SHA.METROPOLITAN_AREA"),
+        BEIJING("BJS.METROPOLITAN_AREA");
 //        XIAN("XIY.AIRPORT"),
 //        GUANGZHOU("CAN.AIRPORT"),
-        NANJING("NKG.AIRPORT");
+//        NANJING("NKG.AIRPORT");
 
         private String code;
         private FinnPlace(String code) {

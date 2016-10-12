@@ -6,6 +6,8 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.internal.ProfilesIni;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -22,7 +24,12 @@ import java.util.*;
 public abstract class TravelCalculator {
     private static final Logger logger = Logger.getLogger(FromChina.class);
 
-    private static WebDriver driver = new FirefoxDriver();
+    private static ProfilesIni listProfiles = new ProfilesIni();
+    private static  FirefoxProfile profile = listProfiles.getProfile("default");
+    private static WebDriver driver = new FirefoxDriver(profile);
+
+//    private static WebDriver driver = new FirefoxDriver();
+//    private static WebDriver driver = new ChromeDriver();
 
     private static final String FROM_CITY = "SVG";
 
@@ -31,8 +38,8 @@ public abstract class TravelCalculator {
     private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
     private static int DEBUG_SLEEP_TIME = 30 * 1000;  //30sec
 
-    private static int MINIMAL_STAY_DAY = 7;
-    private static int MAXIMAL_STAY_DAY = 30;
+    private static int MINIMAL_STAY_DAY = 35;
+    private static int MAXIMAL_STAY_DAY = 45;
 
 
     private final static Calendar start = Calendar.getInstance();
@@ -52,15 +59,15 @@ public abstract class TravelCalculator {
     private static List<String> bestPriceUrls = new ArrayList<String>();
 
     private static boolean enableEmailNotification = true;
-    private static boolean enableSavingToExcel = true;
+    private static boolean enableSavingToExcel = false;
 
     public static void main(String[] args) throws Exception {
 //        start.set(2016, 0, 16);     // Jan!
-        springFestivalStart.set(2016, 1, 8);
-        springFestivalEnd.set(2016, 1, 15);
+        springFestivalStart.set(2016, 7, 12);
+        springFestivalEnd.set(2016, 9, 15);
 
-        start.set(2017, 1, 1);     //
-        end.set(2017, 11, 31);        //
+        start.set(2017, 3, 12);     //
+        end.set(2017, 4, 25);        //
 
         while (true) {
             Calendar lastPossibleDayToGo = Calendar.getInstance();
@@ -113,6 +120,7 @@ public abstract class TravelCalculator {
                     }
                     to.add(Calendar.DAY_OF_MONTH, 1);
 //                    sleep(DEBUG_SLEEP_TIME);
+                    sleep(SLEEP_TIME);
                 }
                 if(enableSavingToExcel && fromCities.size() > 0) {
                     writeToExcel(from);
@@ -124,7 +132,8 @@ public abstract class TravelCalculator {
 
     private static void writeToExcel(Calendar from) {
         try {
-            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-MMM-yyyy").format(from) + ".xls");
+            System.out.println("Generate Xls for date: " + from);
+            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-MMM-yyyy").format(from.getTime()) + ".xls");
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
 
@@ -220,11 +229,11 @@ public abstract class TravelCalculator {
         double thresholdPrice = 0;
         switch (travelType) {
             case 0: {
-                thresholdPrice = 4000;
+                thresholdPrice = 3500;
                 break;
             }
             case 1: {
-                thresholdPrice = 3000;
+                thresholdPrice = 3500;
                 break;
             }
             case 2: {
@@ -286,7 +295,7 @@ public abstract class TravelCalculator {
             System.out.println("email sent");
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
 // 	Properties props = new Properties();
 //		props.put("mail.smtp.host", "smtp.gmail.com");
@@ -326,9 +335,9 @@ public abstract class TravelCalculator {
         NANJING("NKG", 0),
 
         SHANGHAI("SHA", 1),
-        BEIJING("BJS", 1),
-        HANGZHOU("HGH", 1),
-        WUHAN("WUH", 1);
+        BEIJING("BJS", 1);
+//        HANGZHOU("HGH", 1);
+//        WUHAN("WUH", 1);
 
 //        GUANGZHOU("CAN", 2),
 //        CHENGDU("CTU", 2),
@@ -359,9 +368,9 @@ public abstract class TravelCalculator {
         NANJING("NKG.AIRPORT", 0),
 
         SHANGHAI("SHA.METROPOLITAN_AREA", 1),
-        BEIJING("BJS.METROPOLITAN_AREA", 1),
-        HANGZHOU("HGH.AIRPORT", 1),
-        WUHAN("WUH.AIRPORT", 1);
+        BEIJING("BJS.METROPOLITAN_AREA", 1);
+//        HANGZHOU("HGH.AIRPORT", 1);
+//        WUHAN("WUH.AIRPORT", 1);
 
 
 //        XIAN("XIY.AIRPORT", 2),
