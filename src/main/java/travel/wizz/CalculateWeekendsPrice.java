@@ -20,6 +20,7 @@ import java.util.*;
 /**
  * Created by long on 15.03.2016.
  */
+
 public class CalculateWeekendsPrice {
 
     private static Logger logger = Logger.getLogger(CalculateWeekendsPrice.class);
