@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -24,26 +25,41 @@ public class TravelAgent {
 
             driver.get(finnURLString);
 
-            wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("p.mbt.mrm.largetext"), "Billigst!"));
+//            wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("p.mbt.mrm.largetext"), "Billigst!"));
+//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("largetext primary-blue inline-banner-board")));
+//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.largetext.primary-blue.inline-banner-board")));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("progressIndicator")));
             //        List<WebElement> finnPrice = driver.findElements(By.cssSelector("p.mbt.mtt.mrm.largetext.blue"));
             double price = Double.MAX_VALUE;
             try {
-                By cssSelector = By.cssSelector("p.mbt.mtt.mrm.largetext.blue");
-                if(driver.findElements(cssSelector).size() > 0) {
-                    for(int i = 0; i < 6; i ++) {
-                        WebElement element = driver.findElement(cssSelector);
-                        String finnPrice = element.getText();
-                        double tempP = Double.parseDouble(finnPrice.substring(0, finnPrice.length() - 2).replaceAll(" ", ""));
-                        if(tempP < price) {
-                            price = tempP;
-                            Thread.sleep(5 * 1000);
-                        } else {
-                            break;
-                        }
+                By cssSelector = By.cssSelector("div.largetext.primary-blue.inline-banner-board");
+                List<WebElement> elements = driver.findElements(cssSelector);
+                for (WebElement element : elements) {
+                    //eg:Billigst 6 050,-
+                    String finnPrice = element.getText();
+                    if(finnPrice.startsWith("Billigst ")) {
+                        finnPrice = finnPrice.replaceAll(" ", "");
+                        finnPrice = finnPrice.substring("Billigst".length(), finnPrice.length() - 2);
+                        price = Double.parseDouble(finnPrice);
                     }
-                } else {
-                    logger.info("no such css selector exists");
+
                 }
+
+//                if(elements.size() > 0) {
+//                    for(int i = 0; i < 6; i ++) {
+//                        WebElement element = driver.findElement(cssSelector);
+//                        String finnPrice = element.getText();
+//                        double tempP = Double.parseDouble(finnPrice.substring(0, finnPrice.length() - 2).replaceAll(" ", ""));
+//                        if(tempP < price) {
+//                            price = tempP;
+//                            Thread.sleep(5 * 1000);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                } else {
+//                    logger.info("no such css selector exists");
+//                }
             } catch (StaleElementReferenceException e) {
                 logger.error("should not be here" + e.toString());
             }

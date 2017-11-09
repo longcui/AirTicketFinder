@@ -1,6 +1,5 @@
 package travel.wizz;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -182,8 +181,8 @@ public class WizzWeekendsPriceV1 {
 
     private List<TravelOption> getTravelOptions(AIRPORT_NAME airport_name) {
         ArrayList<TravelOption> rets = new ArrayList<>();
-        Map<LocalDate, Integer> priceFrom = new HashedMap();
-        Map<LocalDate, Integer> priceTo = new HashedMap();
+        Map<LocalDate, Integer> priceFrom = new HashMap();
+        Map<LocalDate, Integer> priceTo = new HashMap();
 
         LocalDate localDate = LocalDate.now();
         for(int i = 0; i < 12; i ++){

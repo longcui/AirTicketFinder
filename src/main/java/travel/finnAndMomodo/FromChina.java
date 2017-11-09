@@ -1,19 +1,12 @@
 package travel.finnAndMomodo;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Hyperlink;
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.WebDriver;
+import travel.browser.SeleniumWebDriverFirefox;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,8 +27,8 @@ public class FromChina {
     private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
     private static int DEBUG_SLEEP_TIME = 5 * 1000;  //30sec
 
-    private static int MINIMAL_STAY_DAY = 28;
-    private static int MAXIMAL_STAY_DAY = 35;
+    private static int MINIMAL_STAY_DAY = 80;
+    private static int MAXIMAL_STAY_DAY = 88;
 
 
     private final static Calendar start = Calendar.getInstance();
@@ -50,12 +43,12 @@ public class FromChina {
     private static List<Double> bestPrices = new ArrayList<Double>();
     private static List<String> bestPriceUrls = new ArrayList<String>();
 
-    private static WebDriver driver = new FirefoxDriver();
+    private static WebDriver driver = SeleniumWebDriverFirefox.getDriver();
 
     public static void main(String[] args) throws Exception {
         //month: 0: jan
-        start.set(2016, 7, 12);
-        end.set(2015, 8, 17);
+        start.set(2018, 2, 15);
+        end.set(2018, 6, 5);
 
         while (true) {
             Calendar lastPossibleLeaveDay = Calendar.getInstance();
@@ -80,8 +73,10 @@ public class FromChina {
 //                    System.out.println(from.getTime() + "-------" + to.getTime());
                     for (MomondoCountry momondoCountry : MomondoCountry.values()) {
                         FinnPlace finnCountry = FinnPlace.valueOf(momondoCountry.name());
-//                        double priceFromMomondo = getPriceFromMomondo(momondoCountry, from, to);
-                        double priceFromMomondo = 99999;
+                        double priceFromMomondo = TravelAgent.getPriceFromMomondo(driver, getMomondoURLString(momondoCountry, from, to));
+                        logger.info("Momondo:" + momondoCountry + ":  " + from.getTime() + to.getTime() + ". price is: " + priceFromMomondo);
+
+//                        double priceFromMomondo = 99999;
                         double priceForFinn = TravelAgent.getPriceForFinn(driver, getFinnURLString(finnCountry, from, to));
                         logger.info("Finn:" + finnCountry + ":  " + from.getTime() + to.getTime() + ". price is: " + priceForFinn);
                         if(priceForFinn < priceFromMomondo) {
@@ -101,72 +96,10 @@ public class FromChina {
 //                sleep(DEBUG_SLEEP_TIME);
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
-            writeToExcel();
+//            writeToExcel();
         }
     }
 
-    private static void writeToExcel() {
-        try {
-            File file = new File("price.xls" + new Date());
-            if(!file.exists()) {
-                file.createNewFile();
-                logger.info("file created.");
-            }
-            FileOutputStream fileOut = new FileOutputStream(file);
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
-
-            // index from 0,0... cell A1 is cell(0,0)
-            for(int i =0; i < fromCities.size(); i ++) {
-                HSSFRow row1 = worksheet.createRow((short) i);
-
-                HSSFCell cellA1 = row1.createCell((short) 0);
-                cellA1.setCellValue(fromCities.get(i));
-                HSSFCellStyle cellStyle = workbook.createCellStyle();
-                cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
-                cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-                cellA1.setCellStyle(cellStyle);
-
-                HSSFCell cellB1 = row1.createCell((short) 1);
-                cellB1.setCellValue(froms.get(i));
-
-                HSSFCell cellC1 = row1.createCell((short) 2);
-                cellC1.setCellValue(tos.get(i));
-
-                HSSFCell cellD1 = row1.createCell((short) 3);
-                cellD1.setCellValue(bestPrices.get(i));
-
-                HSSFCell cellE1 = row1.createCell((short) 4);
-                cellE1.setCellValue(bestPriceUrls.get(i));
-
-                HSSFCellStyle cellStyle1 = workbook.createCellStyle();
-                HSSFFont font = workbook.createFont();
-                font.setUnderline(HSSFFont.U_SINGLE);
-                font.setColor(HSSFColor.BLUE.index);
-                cellStyle1.setFont(font);
-                cellE1.setCellStyle(cellStyle1);
-
-                HSSFHyperlink link = (HSSFHyperlink)workbook.getCreationHelper()
-                        .createHyperlink(Hyperlink.LINK_URL);
-                link.setAddress(bestPriceUrls.get(i));
-                cellE1.setHyperlink((HSSFHyperlink) link);
-            }
-
-            workbook.write(fileOut);
-            fileOut.flush();
-            fileOut.close();
-        }catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        fromCities.clear();
-        froms.clear();
-        tos.clear();
-        bestPrices.clear();
-        bestPriceUrls.clear();
-    }
 
     private static void prepareWritingToExcel(String fromCity, Date from, Date to, double bestPrice, String bestPriceURL) {
        fromCities.add(fromCity);

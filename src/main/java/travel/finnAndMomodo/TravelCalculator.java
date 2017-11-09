@@ -1,9 +1,6 @@
 package travel.finnAndMomodo;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -13,9 +10,6 @@ import travel.Credential;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -23,11 +17,11 @@ import java.util.*;
  * Created by Longcui on 29.07.2014.
  */
 public abstract class TravelCalculator {
-    private static final Logger logger = Logger.getLogger(FromChina.class);
+    private static final Logger logger = Logger.getLogger(TravelCalculator.class);
 
     private static ProfilesIni listProfiles = new ProfilesIni();
     private static  FirefoxProfile profile = listProfiles.getProfile("default");
-    private static WebDriver driver = new FirefoxDriver(profile);
+    private static WebDriver driver = new FirefoxDriver();
 
 //    private static WebDriver driver = new FirefoxDriver();
 //    private static WebDriver driver = new ChromeDriver();
@@ -39,8 +33,8 @@ public abstract class TravelCalculator {
     private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
     private static int DEBUG_SLEEP_TIME = 30 * 1000;  //30sec
 
-    private static int MINIMAL_STAY_DAY = 35;
-    private static int MAXIMAL_STAY_DAY = 45;
+    private static int MINIMAL_STAY_DAY = 75;
+    private static int MAXIMAL_STAY_DAY = 87;
 
 
     private final static Calendar start = Calendar.getInstance();
@@ -67,8 +61,8 @@ public abstract class TravelCalculator {
         springFestivalStart.set(2016, 7, 12);
         springFestivalEnd.set(2016, 9, 15);
 
-        start.set(2017, 3, 12);     //
-        end.set(2017, 4, 25);        //
+        start.set(2018, 2, 17);     //
+        end.set(2018, 5, 30);        //
 
         while (true) {
             Calendar lastPossibleDayToGo = Calendar.getInstance();
@@ -124,72 +118,13 @@ public abstract class TravelCalculator {
                     sleep(SLEEP_TIME);
                 }
                 if(enableSavingToExcel && fromCities.size() > 0) {
-                    writeToExcel(from);
+//                    writeToExcel(from);
                 }
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
     }
 
-    private static void writeToExcel(Calendar from) {
-        try {
-            System.out.println("Generate Xls for date: " + from);
-            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-MMM-yyyy").format(from.getTime()) + ".xls");
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
-
-            // index from 0,0... cell A1 is cell(0,0)
-            for(int i =0; i < fromCities.size(); i ++) {
-                HSSFRow row1 = worksheet.createRow((short) i);
-
-                HSSFCell cellA1 = row1.createCell((short) 0);
-                cellA1.setCellValue(fromCities.get(i));
-                HSSFCellStyle cellStyle = workbook.createCellStyle();
-                cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
-                cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-                cellA1.setCellStyle(cellStyle);
-
-                HSSFCell cellB1 = row1.createCell((short) 1);
-                cellB1.setCellValue(froms.get(i));
-
-                HSSFCell cellC1 = row1.createCell((short) 2);
-                cellC1.setCellValue(tos.get(i));
-
-                HSSFCell cellD1 = row1.createCell((short) 3);
-                cellD1.setCellValue(bestPrices.get(i));
-
-                HSSFCell cellE1 = row1.createCell((short) 4);
-                cellE1.setCellValue(bestPriceUrls.get(i));
-
-                HSSFCellStyle cellStyle1 = workbook.createCellStyle();
-                HSSFFont font = workbook.createFont();
-                font.setUnderline(HSSFFont.U_SINGLE);
-                font.setColor(HSSFColor.BLUE.index);
-                cellStyle1.setFont(font);
-                cellE1.setCellStyle(cellStyle1);
-
-                HSSFHyperlink link = (HSSFHyperlink)workbook.getCreationHelper()
-                        .createHyperlink(Hyperlink.LINK_URL);
-                link.setAddress(bestPriceUrls.get(i));
-                cellE1.setHyperlink((HSSFHyperlink) link);
-            }
-
-            workbook.write(fileOut);
-            fileOut.flush();
-            fileOut.close();
-        }catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        fromCities.clear();
-        froms.clear();
-        tos.clear();
-        bestPrices.clear();
-        bestPriceUrls.clear();
-        logger.info("file saved.");
-    }
 
     private static void prepareWritingToExcel(String fromCity, Date from, Date to, double bestPrice, String bestPriceURL) {
         fromCities.add(fromCity);
