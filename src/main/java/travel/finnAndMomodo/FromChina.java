@@ -3,6 +3,7 @@ package travel.finnAndMomodo;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import travel.browser.SeleniumWebDriverFirefox;
+import travel.excel.ExcelExporter;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -38,8 +39,8 @@ public class FromChina {
     private static SimpleDateFormat sdfFin = new SimpleDateFormat("dd.MM.YYYY");     //14.05.2015
 
     private static List<String> fromCities = new ArrayList<String>();
-    private static List<String> froms = new ArrayList<String>();
-    private static List<String> tos = new ArrayList<String>();
+    private static List<String> fromDates = new ArrayList<String>();
+    private static List<String> toDates = new ArrayList<String>();
     private static List<Double> bestPrices = new ArrayList<Double>();
     private static List<String> bestPriceUrls = new ArrayList<String>();
 
@@ -78,6 +79,7 @@ public class FromChina {
 
 //                        double priceFromMomondo = 99999;
                         double priceForFinn = TravelAgent.getPriceForFinn(driver, getFinnURLString(finnCountry, from, to));
+//                        double priceForFinn = 555;
                         logger.info("Finn:" + finnCountry + ":  " + from.getTime() + to.getTime() + ". price is: " + priceForFinn);
                         if(priceForFinn < priceFromMomondo) {
                             bestPriceURL = getFinnURLString(finnCountry, from, to);
@@ -92,19 +94,27 @@ public class FromChina {
                         prepareWritingToExcel(momondoCountry.name(), from.getTime(), to.getTime(), bestPrice, bestPriceURL);
                     }
                     to.add(Calendar.DAY_OF_MONTH, 1);
+
                 }
 //                sleep(DEBUG_SLEEP_TIME);
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
-//            writeToExcel();
+
+            ExcelExporter excelExporter = new ExcelExporter();
+            excelExporter.setBestPrices(bestPrices);
+            excelExporter.setBestPriceUrls(bestPriceUrls);
+            excelExporter.setFromCities(fromCities);
+            excelExporter.setFromDates(fromDates);
+            excelExporter.setToDates(toDates);
+            excelExporter.writeToExcel();
         }
     }
 
 
     private static void prepareWritingToExcel(String fromCity, Date from, Date to, double bestPrice, String bestPriceURL) {
        fromCities.add(fromCity);
-        froms.add(sdfFin.format(from));
-        tos.add(sdfFin.format(to));
+        fromDates.add(sdfFin.format(from));
+        toDates.add(sdfFin.format(to));
         bestPrices.add(bestPrice);
         bestPriceUrls.add(bestPriceURL);
     }

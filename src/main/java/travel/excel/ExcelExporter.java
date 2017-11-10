@@ -5,31 +5,46 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Hyperlink;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ExcelExporter {
     private static final Logger logger = Logger.getLogger(ExcelExporter.class);
 
-    private static List<String> fromCities;
-    private static List<String> froms ;
-    private static List<String> tos ;
-    private static List<Double> bestPrices;
-    private static List<String> bestPriceUrls;
+    private List<String> fromCities;
+    private List<String> fromDates;
+    private List<String> toDates;
+    private List<Double> bestPrices;
+    private List<String> bestPriceUrls;
 
-    private static void writeToExcel(Calendar from) {
+    public void writeToExcel() {
         try {
-            System.out.println("Generate Xls for date: " + from);
-            FileOutputStream fileOut = new FileOutputStream("price_" + new SimpleDateFormat("dd-MMM-yyyy").format(from.getTime()) + ".xls");
+            logger.info("Generating Excel.");
+//todo: why this does not work: createFile is false            File file = new File("C:\\prices\\price_" + LocalDateTime.now() + ".xlsx");
+            LocalDateTime now = LocalDateTime.now();
+            File file = new File("price_" + now.getDayOfMonth() + "_" + now.getHour() + "_" + now.getMinute() + ".xls");
+//            File file = new File("test1122");
+            if(!file.exists()) {
+//                boolean mkdirs = file.mkdirs();
+//                if(!mkdirs) {
+//                    logger.error("could not make dirs");
+//                }
+
+                boolean newFile = file.createNewFile();
+                if(!newFile) {
+                    logger.error("could not create file.");
+                }
+            }
+            FileOutputStream fileOut = new FileOutputStream(file);
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet worksheet = workbook.createSheet("POI Worksheet");
 
             // index from 0,0... cell A1 is cell(0,0)
-            for(int i =0; i < fromCities.size(); i ++) {
+            for(int i = 0; i < fromDates.size(); i ++) {
                 HSSFRow row1 = worksheet.createRow((short) i);
 
                 HSSFCell cellA1 = row1.createCell((short) 0);
@@ -40,10 +55,10 @@ public class ExcelExporter {
                 cellA1.setCellStyle(cellStyle);
 
                 HSSFCell cellB1 = row1.createCell((short) 1);
-                cellB1.setCellValue(froms.get(i));
+                cellB1.setCellValue(fromDates.get(i));
 
                 HSSFCell cellC1 = row1.createCell((short) 2);
-                cellC1.setCellValue(tos.get(i));
+                cellC1.setCellValue(toDates.get(i));
 
                 HSSFCell cellD1 = row1.createCell((short) 3);
                 cellD1.setCellValue(bestPrices.get(i));
@@ -74,30 +89,30 @@ public class ExcelExporter {
         }
 
         fromCities.clear();
-        froms.clear();
-        tos.clear();
+        fromDates.clear();
+        toDates.clear();
         bestPrices.clear();
         bestPriceUrls.clear();
         logger.info("file saved.");
     }
 
-    public static void setFromCities(List<String> fromCities) {
-        ExcelExporter.fromCities = fromCities;
+    public void setFromDates(List<String> fromDates) {
+        this.fromDates = fromDates;
     }
 
-    public static void setFroms(List<String> froms) {
-        ExcelExporter.froms = froms;
+    public void setToDates(List<String> toDates) {
+        this.toDates = toDates;
     }
 
-    public static void setTos(List<String> tos) {
-        ExcelExporter.tos = tos;
+    public void setBestPrices(List<Double> bestPrices) {
+        this.bestPrices = bestPrices;
     }
 
-    public static void setBestPrices(List<Double> bestPrices) {
-        ExcelExporter.bestPrices = bestPrices;
+    public void setBestPriceUrls(List<String> bestPriceUrls) {
+        this.bestPriceUrls = bestPriceUrls;
     }
 
-    public static void setBestPriceUrls(List<String> bestPriceUrls) {
-        ExcelExporter.bestPriceUrls = bestPriceUrls;
+    public void setFromCities(List<String> fromCities) {
+        this.fromCities = fromCities;
     }
 }
