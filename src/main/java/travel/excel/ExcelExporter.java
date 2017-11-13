@@ -15,7 +15,10 @@ import java.util.List;
 public class ExcelExporter {
     private static final Logger logger = Logger.getLogger(ExcelExporter.class);
 
-    private List<String> fromCities;
+    private List<String> fromChinaCities;
+    private List<String> toNorwayCities;
+    private List<String> fromNorwayCities;
+    private List<String> toChinaCities;
     private List<String> fromDates;
     private List<String> toDates;
     private List<Double> bestPrices;
@@ -47,23 +50,34 @@ public class ExcelExporter {
             for(int i = 0; i < fromDates.size(); i ++) {
                 HSSFRow row1 = worksheet.createRow((short) i);
 
-                HSSFCell cellA1 = row1.createCell((short) 0);
-                cellA1.setCellValue(fromCities.get(i));
+                int colIdx = 0;
+                HSSFCell cellA1 = row1.createCell((short) colIdx ++);
+                cellA1.setCellValue(fromChinaCities.get(i));
                 HSSFCellStyle cellStyle = workbook.createCellStyle();
                 cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
                 cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
                 cellA1.setCellStyle(cellStyle);
 
-                HSSFCell cellB1 = row1.createCell((short) 1);
+                HSSFCell cellA11 = row1.createCell((short) colIdx ++);
+                cellA11.setCellValue(toNorwayCities.get(i));
+
+                HSSFCell cellA12 = row1.createCell((short) colIdx ++);
+                cellA12.setCellValue(fromNorwayCities.get(i));
+
+                HSSFCell cellA13 = row1.createCell((short) colIdx ++);
+                cellA13.setCellValue(toChinaCities.get(i));
+
+
+                HSSFCell cellB1 = row1.createCell((short) colIdx ++);
                 cellB1.setCellValue(fromDates.get(i));
 
-                HSSFCell cellC1 = row1.createCell((short) 2);
+                HSSFCell cellC1 = row1.createCell((short) colIdx ++);
                 cellC1.setCellValue(toDates.get(i));
 
-                HSSFCell cellD1 = row1.createCell((short) 3);
+                HSSFCell cellD1 = row1.createCell((short) colIdx ++);
                 cellD1.setCellValue(bestPrices.get(i));
 
-                HSSFCell cellE1 = row1.createCell((short) 4);
+                HSSFCell cellE1 = row1.createCell((short) colIdx ++);
                 cellE1.setCellValue(bestPriceUrls.get(i));
 
                 HSSFCellStyle cellStyle1 = workbook.createCellStyle();
@@ -88,7 +102,10 @@ public class ExcelExporter {
             e.printStackTrace();
         }
 
-        fromCities.clear();
+        fromChinaCities.clear();
+        toNorwayCities.clear();
+        fromNorwayCities.clear();
+        toNorwayCities.clear();
         fromDates.clear();
         toDates.clear();
         bestPrices.clear();
@@ -112,7 +129,19 @@ public class ExcelExporter {
         this.bestPriceUrls = bestPriceUrls;
     }
 
-    public void setFromCities(List<String> fromCities) {
-        this.fromCities = fromCities;
+    public void setFromChinaCities(List<String> fromChinaCities) {
+        this.fromChinaCities = fromChinaCities;
+    }
+
+    public void setToNorwayCities(List<String> toNorwayCities) {
+        this.toNorwayCities = toNorwayCities;
+    }
+
+    public void setToChinaCities(List<String> toChinaCities) {
+        this.toChinaCities = toChinaCities;
+    }
+
+    public void setFromNorwayCities(List<String> fromNorwayCities) {
+        this.fromNorwayCities = fromNorwayCities;
     }
 }

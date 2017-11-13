@@ -41,7 +41,7 @@ public class FromChinaTest {
     }
 
     public void testCountry() {
-        for (FromChina.MomondoCountry country : FromChina.MomondoCountry.values()) {
+        for (FromChina.MomondoChinaPlace country : FromChina.MomondoChinaPlace.values()) {
             System.out.println(country.toString());
             System.out.println(country.name());
             System.out.println(country.getCode());

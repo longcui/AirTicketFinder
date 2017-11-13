@@ -44,39 +44,14 @@ public class TravelAgent {
                     }
 
                 }
-
-//                if(elements.size() > 0) {
-//                    for(int i = 0; i < 6; i ++) {
-//                        WebElement element = driver.findElement(cssSelector);
-//                        String finnPrice = element.getText();
-//                        double tempP = Double.parseDouble(finnPrice.substring(0, finnPrice.length() - 2).replaceAll(" ", ""));
-//                        if(tempP < price) {
-//                            price = tempP;
-//                            Thread.sleep(5 * 1000);
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                } else {
-//                    logger.info("no such css selector exists");
-//                }
             } catch (StaleElementReferenceException e) {
                 logger.error("should not be here" + e.toString());
+                return getPriceForFinn(driver, finnURLString);
             }
-            //        double bestPrice = Double.MAX_VALUE;
-            //        for (WebElement webElement : finnPrice) {
-            //            String price = webElement.getText();
-            //            logger.info("Finn:" + country + ":  " + from.getTime() + to.getTime() + ". price is: " + price);
-            //            double p = Double.parseDouble(price.substring(0, price.length() - 2).replaceAll(" ", ""));
-            //            if (p < bestPrice) {
-            //                bestPrice = p;
-            //            }
-            //        }
             return price;
         } catch (Exception e) {
             logger.error(e.getMessage());
-            logger.error("!!!");
-            return 99999;
+            return getPriceForFinn(driver, finnURLString);
         }
     }
 
@@ -88,11 +63,6 @@ public class TravelAgent {
             WebDriverWait wait = new WebDriverWait(driver, 180);        //second
             wait.ignoring(TimeoutException.class);
             driver.get(momondoURLString);
-            // Find the text input element by its name
-            //            List<WebElement> elements = driver.findElements(By.className(".value"));
-            //            wait.until(ExpectedConditions.visibilityOf(elements.get(0)));
-            //        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.value")));
-            //        WebElement value = driver.findElement(By.cssSelector("span.value"));
             try {
                 wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("div#searchProgressText"), "Search complete"));
             } catch (TimeoutException e) {
