@@ -3,18 +3,19 @@ package travel.finnAndMomodo;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import travel.browser.SeleniumWebDriverFirefox;
+import travel.domain.TicketInfo;
 import travel.excel.ExcelExporter;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Properties;
 
 /**
  * Created by Longcui on 29.07.2014.
  */
-public class FromChina {
+public class FromChina extends Travel{
     private static final Logger logger = Logger.getLogger(FromChina.class);
 
     private static final String MOMONDO = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=SHA&SD0=SVG&SDP0=14-05-2015&SO1=SVG&SD1=SHA&SDP1=20-05-2015&AD=1&TK=ECO&DO=false&NA=false";
@@ -37,19 +38,7 @@ public class FromChina {
     private final static Calendar start = Calendar.getInstance();
     private final static Calendar end = Calendar.getInstance();
 
-    private static SimpleDateFormat sdfMo = new SimpleDateFormat("dd-M-YYYY");     //14-5-2015
-    private static SimpleDateFormat sdfFin = new SimpleDateFormat("dd.MM.YYYY");     //14.05.2015
 
-    private static List<String> fromChinaCities = new ArrayList<String>();
-    private static List<String> toNorwayCities = new ArrayList<String>();
-    private static List<String> fromNorwayCities = new ArrayList<String>();
-    private static List<String> toChinaCities = new ArrayList<String>();
-
-    private static List<String> fromDates = new ArrayList<String>();
-    private static List<String> toDates = new ArrayList<String>();
-
-    private static List<Double> bestPrices = new ArrayList<Double>();
-    private static List<String> bestPriceUrls = new ArrayList<String>();
 
     private static WebDriver driver = SeleniumWebDriverFirefox.getDriver();
 
@@ -92,7 +81,7 @@ public class FromChina {
                                     FinnChinaPlace finnToChinaPlace = FinnChinaPlace.valueOf(momondoToChinaPlace.name());
 
                                     String momondoURLString = getMomondoURLString(momondoFromChinaPlace, momondoToNorwayPlace, momondoFromNorwayPlace, momondoToChinaPlace, from, to);
-                                    double priceFromMomondo = TravelAgent.getPriceFromMomondo(
+                                    TicketInfo priceFromMomondo = TravelAgent.getPriceFromMomondo(
                                             driver, momondoURLString);
                                     logger.info("Momondo:" + momondoFromChinaPlace + "-" + momondoToNorwayPlace + "-" + momondoFromNorwayPlace + "-" + momondoToChinaPlace +  ": " + from.getTime() + " " + to.getTime() + ". price is: " + priceFromMomondo);
                                     prepareWritingToExcel(momondoFromChinaPlace.name(), momondoToNorwayPlace.name(), momondoFromNorwayPlace.name(), momondoToChinaPlace.name(),
@@ -101,7 +90,7 @@ public class FromChina {
 
                                     //                        double priceFromMomondo = 99999;
                                     String finnURLString = getFinnURLString(finnFromChinaPlace, finnToNorwayPlace, finnFromNorwayPlace, finnToChinaPlace, from, to);
-                                    double priceForFinn = TravelAgent.getPriceForFinn(
+                                    TicketInfo priceForFinn = TravelAgent.getPriceForFinn(
                                             driver, finnURLString);
                                     //                        double priceForFinn = 555;
                                     logger.info("Finn   :" + finnFromChinaPlace + "-" + finnToNorwayPlace + "-" + finnFromNorwayPlace + "-" + finnToChinaPlace +  ": " + from.getTime() + " " + to.getTime() + ". price is: " + priceForFinn);
@@ -113,21 +102,18 @@ public class FromChina {
                                 }
                             }
                         }
-
                     }
                     to.add(Calendar.DAY_OF_MONTH, 1);
-
                 }
 //                sleep(DEBUG_SLEEP_TIME);
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
-
             ExcelExporter excelExporter = new ExcelExporter();
             excelExporter.setFromChinaCities(fromChinaCities);
             excelExporter.setToNorwayCities(toNorwayCities);
             excelExporter.setFromNorwayCities(fromNorwayCities);
             excelExporter.setToChinaCities(toChinaCities);
-            excelExporter.setBestPrices(bestPrices);
+            excelExporter.setBestPrices(prices);
             excelExporter.setBestPriceUrls(bestPriceUrls);
             excelExporter.setFromDates(fromDates);
             excelExporter.setToDates(toDates);
@@ -136,16 +122,7 @@ public class FromChina {
     }
 
 
-    private static void prepareWritingToExcel(String fromChinaCity, String toNorwayCity, String fromNorwayCity, String toChinaCity, Date from, Date to, double bestPrice, String bestPriceURL) {
-        fromChinaCities.add(fromChinaCity);
-        toNorwayCities.add(toNorwayCity);
-        fromNorwayCities.add(fromNorwayCity);
-        toChinaCities.add(toChinaCity);
-        fromDates.add(sdfFin.format(from));
-        toDates.add(sdfFin.format(to));
-        bestPrices.add(bestPrice);
-        bestPriceUrls.add(bestPriceURL);
-    }
+
 
 
     private static void sleep(long milliseconds) {

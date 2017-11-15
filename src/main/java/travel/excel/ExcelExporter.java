@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import travel.domain.TicketInfo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +22,7 @@ public class ExcelExporter {
     private List<String> toChinaCities;
     private List<String> fromDates;
     private List<String> toDates;
-    private List<Double> bestPrices;
+    private List<TicketInfo> bestPrices;
     private List<String> bestPriceUrls;
 
     public void writeToExcel() {
@@ -75,7 +76,13 @@ public class ExcelExporter {
                 cellC1.setCellValue(toDates.get(i));
 
                 HSSFCell cellD1 = row1.createCell((short) colIdx ++);
-                cellD1.setCellValue(bestPrices.get(i));
+                cellD1.setCellValue(bestPrices.get(i).getCheapest());
+
+                HSSFCell cellD11 = row1.createCell((short) colIdx ++);
+                cellD11.setCellValue(bestPrices.get(i).getQuickest());
+
+                HSSFCell cellD12 = row1.createCell((short) colIdx ++);
+                cellD12.setCellValue(bestPrices.get(i).getBest());
 
                 HSSFCell cellE1 = row1.createCell((short) colIdx ++);
                 cellE1.setCellValue(bestPriceUrls.get(i));
@@ -121,7 +128,7 @@ public class ExcelExporter {
         this.toDates = toDates;
     }
 
-    public void setBestPrices(List<Double> bestPrices) {
+    public void setBestPrices(List<TicketInfo> bestPrices) {
         this.bestPrices = bestPrices;
     }
 
