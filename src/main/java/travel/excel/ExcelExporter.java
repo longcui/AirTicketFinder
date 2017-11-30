@@ -73,7 +73,7 @@ public class ExcelExporter {
                 cellB1.setCellValue(fromDates.get(i));
 
                 HSSFCell cellC1 = row1.createCell((short) colIdx ++);
-                cellC1.setCellValue(toDates.get(i));
+                cellC1.setCellValue(toDates.get(i) == null? "": toDates.get(i));
 
                 HSSFCell cellD1 = row1.createCell((short) colIdx ++);
                 cellD1.setCellValue(bestPrices.get(i).getCheapest());

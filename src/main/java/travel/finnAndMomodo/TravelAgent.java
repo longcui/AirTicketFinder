@@ -85,7 +85,7 @@ public class TravelAgent {
             } catch (TimeoutException e) {
                 logger.error(e.getMessage());
                 logger.error("weired!!");
-                return null;
+                return new TicketInfo();
             }
 
             String cheapestPrice = driver.findElement(By.cssSelector("li.option.cheapest span.price")).getText();
@@ -123,7 +123,7 @@ public class TravelAgent {
 //            }
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return null;
+            return new TicketInfo();
         }
     }
 }
