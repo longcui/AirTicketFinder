@@ -2,21 +2,16 @@ package travel.finnAndMomodo;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import travel.Credential;
 import travel.browser.SeleniumWebDriverFirefox;
 import travel.domain.TicketInfo;
 import travel.excel.ExcelExporter;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Properties;
 
 /**
  * Created by Longcui on 29.07.2014.
@@ -32,7 +27,7 @@ public class FromChina extends Travel{
     private static String[] DEBUG_EMAILS = new String[]{"dragonworld1988@gmail.com"};
     private static double momondoPrice;
     private static double unspecificPrice;
-    private static int SLEEP_TIME = 30 * 60 * 1000;  //30min
+    private static int SLEEP_TIME = 60 * 60 * 1000;  //60min
     private static int DEBUG_SLEEP_TIME = 5 * 1000;  //30sec
 
     private int MINIMAL_STAY_DAY = 25;
@@ -142,14 +137,16 @@ public class FromChina extends Travel{
                                     //                        }
                                     if (enableEmailNotification) {
                                         if((to != null && (priceForFinn.getCheapest() < 5500 || priceFromMomondo.getCheapest() < 5500))
-                                                || (to == null && (priceForFinn.getCheapest() < 3500))) {
+                                                || (to == null && (priceForFinn.getCheapest() < 2650))) {
                                             double price = priceForFinn.getCheapest() < priceFromMomondo.getCheapest()? priceForFinn.getCheapest() : priceFromMomondo.getCheapest();
                                             String bestPriceUrl = priceForFinn.getCheapest() < priceFromMomondo.getCheapest()? finnURLString : momondoURLString;
                                             handleNotifications(price, momondoFromChinaPlace + "-" + momondoToNorwayPlace + "-" + momondoFromNorwayPlace + "-" + momondoToChinaPlace + "  " +  String.valueOf(price) + " NOK  from: " + new SimpleDateFormat("dd.MM.yyyy").format(from.getTime()) +   (to == null? "" : "  To: " + new SimpleDateFormat("dd.MM.yyyy").format(to.getTime())), bestPriceUrl);
                                         }
                                     }
-
 //                        }
+                                    if(to == null) {
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -158,7 +155,8 @@ public class FromChina extends Travel{
                         to.add(Calendar.DAY_OF_MONTH, 1);
                     }
                 } while (to != null && to.before(toMax) && to.before(end));
-                sleep(SLEEP_TIME);
+//                sleep(SLEEP_TIME);
+                sleep(DEBUG_SLEEP_TIME);
                 from.add(Calendar.DAY_OF_MONTH, 1);
             }
             ExcelExporter excelExporter = new ExcelExporter();
@@ -170,7 +168,7 @@ public class FromChina extends Travel{
             excelExporter.setBestPriceUrls(bestPriceUrls);
             excelExporter.setFromDates(fromDates);
             excelExporter.setToDates(toDates);
-            excelExporter.writeToExcel();
+//            excelExporter.writeToExcel();
         }
 
     }
@@ -228,76 +226,14 @@ public class FromChina extends Travel{
             }
     }
 
-    private static void sendEmail(String recipient, String subject, String url) {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
 
-        Session session = Session.getInstance(props,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(Credential.DEV_EMAIL, Credential.DEV_EMAIL_PASSWORD);
-                    }
-                });
-
-        try {
-
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("longcuidev@gmail.com"));
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(recipient));
-            message.setSubject(subject);
-            message.setText(url);
-
-            Transport.send(message);
-
-            System.out.println("email sent");
-
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
-// 	Properties props = new Properties();
-//		props.put("mail.smtp.host", "smtp.gmail.com");
-//		props.put("mail.smtp.socketFactory.port", "465");
-//		props.put("mail.smtp.socketFactory.class",
-//				"javax.net.ssl.SSLSocketFactory");
-//		props.put("mail.smtp.auth", "true");
-//		props.put("mail.smtp.port", "465");
-//
-//		Session session = Session.getDefaultInstance(props,
-//			new javax.mail.Authenticator() {
-//				protected PasswordAuthentication getPasswordAuthentication() {
-//					return new PasswordAuthentication(username, password);
-//				}
-//			});
-//
-//		try {
-//
-//			Message message = new MimeMessage(session);
-//			message.setFrom(new InternetAddress("longcuino@gmail.com"));
-//			message.setRecipients(Message.RecipientType.TO,
-//					InternetAddress.parse("longcuino@gmail.com"));
-//			message.setSubject("Testing Subject");
-//			message.setText("Dear Mail Crawler," +
-//					"\n\n No spam to my email, please!");
-//
-//			Transport.send(message);
-//
-//			System.out.println("Done");
-//
-//		} catch (MessagingException e) {
-//			throw new RuntimeException(e);
-//		}
-    }
 
     public enum MomondoChinaPlace {
-        SHANGHAI("SHA");
-//        BEIJING("BJS"),
-//        XIAN("SIA"),
+        SHANGHAI("SHA"),
+        BEIJING("BJS"),
+        XIAN("SIA"),
 //        GUANGZHOU("CAN"),
-//        NANJING("NKG");
+        NANJING("NKG");
 
         private String code;
         private MomondoChinaPlace(String code) {
@@ -310,9 +246,9 @@ public class FromChina extends Travel{
     }
 
     public enum MomondoNorwayPlace {
-        STAVANGER("SVG");
-//        BERGEN("BGO"),
-//        OSLO("OSL");
+        STAVANGER("SVG"),
+        BERGEN("BGO"),
+        OSLO("OSL");
 
         private String code;
         private MomondoNorwayPlace(String code) {
@@ -327,7 +263,7 @@ public class FromChina extends Travel{
     public enum FinnChinaPlace {
         SHANGHAI("SHA.METROPOLITAN_AREA"),
         BEIJING("BJS.METROPOLITAN_AREA"),
-//        XIAN("XIY.AIRPORT"),
+        XIAN("XIY.AIRPORT"),
         GUANGZHOU("CAN.AIRPORT"),
         NANJING("NKG.AIRPORT");
 
