@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
+import static utils.EmailUtils.sendEmail;
+
 /**
  * Created by Longcui on 29.07.2014.
  */

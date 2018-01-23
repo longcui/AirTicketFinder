@@ -1,6 +1,7 @@
 package travel.sas;
 
 import travel.finnAndMomodo.Travel;
+import utils.EmailUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,7 @@ public class BonusTravel extends Travel {
                     String reply = scanner.next();
                     System.out.println(chinaCityCode + ": " + stringDate + ": " + reply);
                     if (!reply.startsWith("{\"errors\":[{\"errorCode\"")) {
-                        sendEmail("longcuino@gmail.com", "Bonus Travel Changed: " + reply, reply);
+                        EmailUtils.sendEmail("longcuino@gmail.com", "Bonus Travel Changed: " + reply, reply);
                     }
                     Thread.sleep(5 * 60 * 1000);
                 }
