@@ -1,6 +1,6 @@
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import travel.finnAndMomodo.FromChina;
+import travel.finnAndMomodo.ChinaTravel;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,7 +41,7 @@ public class FromChinaTest {
     }
 
     public void testCountry() {
-        for (FromChina.MomondoChinaPlace country : FromChina.MomondoChinaPlace.values()) {
+        for (ChinaTravel.MomondoChinaPlace country : ChinaTravel.MomondoChinaPlace.values()) {
             System.out.println(country.toString());
             System.out.println(country.name());
             System.out.println(country.getCode());

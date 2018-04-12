@@ -18,8 +18,8 @@ import static utils.EmailUtils.sendEmail;
 /**
  * Created by Longcui on 29.07.2014.
  */
-public class FromChina extends Travel{
-    private static final Logger logger = Logger.getLogger(FromChina.class);
+public class ChinaTravel extends Travel{
+    private static final Logger logger = Logger.getLogger(ChinaTravel.class);
 
     private static final String MOMONDO = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=SHA&SD0=SVG&SDP0=14-05-2015&SO1=SVG&SD1=SHA&SDP1=20-05-2015&AD=1&TK=ECO&DO=false&NA=false";
     private static final String skyscan = "http://www.skyscanner.no/transport/flyavganger/svg/csha/150414/150415/billettpriser-fra-stavanger-til-shanghai-i-april-2015.html?adults=1&children=0&infants=0&cabinclass=economy&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&rtn=1";
@@ -52,8 +52,8 @@ public class FromChina extends Travel{
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        FromChina fromChina = new FromChina();
-        fromChina.searchTickets(args);
+        ChinaTravel chinaTravel = new ChinaTravel();
+        chinaTravel.searchTickets(args);
     }
 
     private void searchTickets(String[] args) {
@@ -90,7 +90,7 @@ public class FromChina extends Travel{
             lastPossibleLeaveDay.setTime(end.getTime());
             lastPossibleLeaveDay.add(Calendar.DAY_OF_MONTH, -MINIMAL_STAY_DAY);
 
-            from.setTime(FromChina.start.getTime());
+            from.setTime(ChinaTravel.start.getTime());
             while (from.before(lastPossibleLeaveDay)) {
                 String bestPriceURL;
                 double bestPrice;
@@ -187,7 +187,9 @@ public class FromChina extends Travel{
         }
     }
 
-    private static String getMomondoURLString(MomondoChinaPlace momondoFromChinaPlace, MomondoNorwayPlace momondoToNorwayPlace, MomondoNorwayPlace momondoFromNorwayPlace, MomondoChinaPlace momondoToChinaPlace, Calendar from, Calendar to) {
+    private static String getMomondoURLString(MomondoChinaPlace momondoFromChinaPlace, MomondoNorwayPlace momondoToNorwayPlace,
+                                              MomondoNorwayPlace momondoFromNorwayPlace, MomondoChinaPlace momondoToChinaPlace,
+                                              Calendar from, Calendar to) {
         String momondo = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=" +
                 momondoFromChinaPlace.getCode() + "&SD0=" + momondoToNorwayPlace.getCode() + "&SDP0=";
         momondo += sdfMo.format(from.getTime());
