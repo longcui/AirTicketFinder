@@ -13,8 +13,8 @@ import java.util.Scanner;
 
 public class BonusTravel extends Travel {
     public enum ChinaCityCode {
-        BEIJING("PEK"),
-        SHANGHAI("PVG");
+        BEIJING("PEK");
+//        SHANGHAI("PVG");
 
         String des;
 
@@ -26,7 +26,7 @@ public class BonusTravel extends Travel {
     public static void main(String[] args) throws IOException, InterruptedException {
         while (true) {
             for (ChinaCityCode chinaCityCode : ChinaCityCode.values()) {
-                LocalDate localDate = LocalDate.of(2018, 6, 28);
+                LocalDate localDate = LocalDate.of(2018, 6, 27);
                 for (int i = 0; i < 6; i++) {
                     localDate = localDate.plusDays(1);
                     String stringDate = localDate.format(DateTimeFormatter.BASIC_ISO_DATE);
