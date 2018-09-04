@@ -1,6 +1,7 @@
 package website.lego;
 
 import engine.WebContentFetchingEngine;
+import travel.Credential;
 import utils.EmailUtils;
 
 import java.util.Date;
@@ -17,7 +18,7 @@ public class LegoProductFinder {
             System.out.println(new Date() + ": " + isProductExist);
 
             if(isProductExist) {
-                EmailUtils.sendEmail("Liminyang79@hotmail.com", "Millennium Falcon Product is available now", "https://shop.lego.com/en-NO/Millennium-Falcon-75192");
+                EmailUtils.sendEmail(Credential.EMAILS[0], "Millennium Falcon Product is available now", "https://shop.lego.com/en-NO/Millennium-Falcon-75192");
                 break;
             }
 //            EmailUtils.sendEmail("longcuino@gmail.com", "Millennium Falcon Product is available now", "https://shop.lego.com/en-NO/Millennium-Falcon-75192");
