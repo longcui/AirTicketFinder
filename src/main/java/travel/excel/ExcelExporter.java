@@ -12,25 +12,43 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public class ExcelExporter {
     private static final Logger logger = Logger.getLogger(ExcelExporter.class);
 
-    private List<String> fromChinaCities;
-    private List<String> toNorwayCities;
-    private List<String> fromNorwayCities;
-    private List<String> toChinaCities;
-    private List<String> fromDates;
-    private List<String> toDates;
-    private List<TicketInfo> bestPrices;
-    private List<String> bestPriceUrls;
+    final private List<String> fromChinaCities;
+    final private List<String> toNorwayCities;
+    final private List<String> fromNorwayCities;
+    final private List<String> toChinaCities;
+    /**
+     * eg: String like 10.06.2019
+     */
+    final private List<String> fromDates;
+    final private List<String> toDates;
+
+    final private List<TicketInfo> bestPrices;
+    final private List<String> bestPriceUrls;
+
+    public ExcelExporter(List<String> fromChinaCities, List<String> toNorwayCities, List<String> fromNorwayCities, List<String> toChinaCities, List<String> fromDates, List<String> toDates, List<TicketInfo> bestPrices, List<String> bestPriceUrls) {
+        this.fromChinaCities = fromChinaCities;
+        this.toNorwayCities = toNorwayCities;
+        this.fromNorwayCities = fromNorwayCities;
+        this.toChinaCities = toChinaCities;
+        this.fromDates = fromDates;
+        this.toDates = toDates;
+        this.bestPrices = bestPrices;
+        this.bestPriceUrls = bestPriceUrls;
+    }
+
+
 
     public void writeToExcel() {
         try {
             logger.info("Generating Excel.");
 //todo: why this does not work: createFile is false            File file = new File("C:\\prices\\price_" + LocalDateTime.now() + ".xlsx");
             LocalDateTime now = LocalDateTime.now();
-            File file = new File("price_" + now.getDayOfMonth() + "_" + now.getHour() + "_" + now.getMinute() + ".xls");
+            File file = new File("price_" + Optional.ofNullable(fromDates.get(0)).orElse("0") + "(" + now.getHour() + "_" + now.getMinute() + ").xls");
 //            File file = new File("test1122");
             if(!file.exists()) {
 //                boolean mkdirs = file.mkdirs();
@@ -120,35 +138,5 @@ public class ExcelExporter {
         logger.info("file saved.");
     }
 
-    public void setFromDates(List<String> fromDates) {
-        this.fromDates = fromDates;
-    }
 
-    public void setToDates(List<String> toDates) {
-        this.toDates = toDates;
-    }
-
-    public void setBestPrices(List<TicketInfo> bestPrices) {
-        this.bestPrices = bestPrices;
-    }
-
-    public void setBestPriceUrls(List<String> bestPriceUrls) {
-        this.bestPriceUrls = bestPriceUrls;
-    }
-
-    public void setFromChinaCities(List<String> fromChinaCities) {
-        this.fromChinaCities = fromChinaCities;
-    }
-
-    public void setToNorwayCities(List<String> toNorwayCities) {
-        this.toNorwayCities = toNorwayCities;
-    }
-
-    public void setToChinaCities(List<String> toChinaCities) {
-        this.toChinaCities = toChinaCities;
-    }
-
-    public void setFromNorwayCities(List<String> fromNorwayCities) {
-        this.fromNorwayCities = fromNorwayCities;
-    }
 }

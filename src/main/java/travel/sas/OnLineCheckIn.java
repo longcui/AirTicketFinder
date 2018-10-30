@@ -18,9 +18,7 @@ public class OnLineCheckIn {
         Random random = new Random();
         while (true) {
             WebDriver webDriver = WebContentFetchingEngine.getWebDriver();
-            String bookingRef = "";
-            String surName = "";
-            String url = "https://www.sas.no/checkin/itinerary?bookingreference=" + bookingRef + "&names=" + surName;
+            String url = "https://www.sas.no/checkin/itinerary?bookingreference=" + Credential.BOOKING_REF + "&names=" + Credential.SUR_NAME;
             WebDriverWait wait = new WebDriverWait(webDriver, 100);
             webDriver.get(url);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h3")));

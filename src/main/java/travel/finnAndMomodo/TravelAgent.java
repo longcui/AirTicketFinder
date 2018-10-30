@@ -9,6 +9,7 @@ import travel.domain.TicketInfo;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by Longcui on 21.04.2015.
@@ -18,8 +19,8 @@ public class TravelAgent {
     private static Logger logger = Logger.getLogger(TravelAgent.class);
 
 
-    public static TicketInfo getPriceForFinn(WebDriver driver, String finnURLString)  {
-        try{
+    public static TicketInfo getPriceForFinn(WebDriver driver, String finnURLString) throws InterruptedException {
+        try {
             //        driver.manage().window().setPosition(new Point(-2000, 0));
             WebDriverWait wait = new WebDriverWait(driver, 90);
 
@@ -30,36 +31,32 @@ public class TravelAgent {
 //            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.largetext.primary-blue.inline-banner-board")));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("progressIndicator")));
             //        List<WebElement> finnPrice = driver.findElements(By.cssSelector("p.mbt.mtt.mrm.largetext.blue"));
+            Thread.sleep(new Random().nextInt(10) * 1000);
             try {
-                By cssSelector = By.cssSelector("div.largetext.primary-blue.inline-banner-board");
-                By descriAndTimes = By.cssSelector(".mtt.stone.inline-banner-board.smalltext");
+                By cssSelector = By.cssSelector("div.u-mv4.u-stone.u-d1.u-no-break");
+//                By descriAndTimes = By.cssSelector(".mtt.stone.inline-banner-board.smalltext");
 
                 List<WebElement> elements = driver.findElements(cssSelector);
                 TicketInfo ticketInfo = new TicketInfo();
-                for (WebElement element : elements) {
-                    String finnPrice = element.getText();
-                    finnPrice = finnPrice.replaceAll(" ", "");
-                    //eg:Billigst 6 050,-
-                    if(finnPrice.startsWith("Billigst")) {
-                        finnPrice = finnPrice.substring("Billigst".length(), finnPrice.length() - 2);
-                        String durationText = driver.findElements(descriAndTimes).get(0).getText();
-                        ticketInfo.setCheapest(Double.parseDouble(finnPrice));
-                    } else if (finnPrice.startsWith("Raskest")) {
-                        finnPrice = finnPrice.substring("Raskest".length(), finnPrice.length() - 2);
-                        ticketInfo.setQuickest(Double.parseDouble(finnPrice));
-                    } else if (finnPrice.startsWith("Best")) {
-                        finnPrice = finnPrice.substring("Best".length(), finnPrice.length() - 2);
-                        ticketInfo.setBest(Double.parseDouble(finnPrice));
-                    }
-                }
+                String finnDurAndPrice = elements.get(0).getText();
+                finnDurAndPrice = finnDurAndPrice.replaceAll(" ", "");
+                ticketInfo.setCheapest(Double.parseDouble(finnDurAndPrice.split(",")[1]));
+                finnDurAndPrice = elements.get(1).getText();
+                finnDurAndPrice = finnDurAndPrice.replaceAll(" ", "");
+                ticketInfo.setQuickest(Double.parseDouble(finnDurAndPrice.split(",")[1]));
+                finnDurAndPrice = elements.get(2).getText();
+                finnDurAndPrice = finnDurAndPrice.replaceAll(" ", "");
+                ticketInfo.setBest(Double.parseDouble(finnDurAndPrice.split(",")[1]));
                 return ticketInfo;
             } catch (StaleElementReferenceException e) {
                 logger.error("should not be here" + e.toString());
                 return getPriceForFinn(driver, finnURLString);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getMessage());
-            return getPriceForFinn(driver, finnURLString);
+            System.out.println("could not find price from: " + finnURLString);
+            throw new InterruptedException();
         }
     }
 
