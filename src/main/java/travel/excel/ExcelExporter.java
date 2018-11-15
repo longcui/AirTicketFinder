@@ -4,10 +4,10 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.jetbrains.annotations.Nullable;
 import travel.domain.TicketInfo;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -25,6 +25,8 @@ public class ExcelExporter {
      * eg: String like 10.06.2019
      */
     final private List<String> fromDates;
+
+    @Nullable
     final private List<String> toDates;
 
     final private List<TicketInfo> bestPrices;
@@ -42,23 +44,15 @@ public class ExcelExporter {
     }
 
 
-
     public void writeToExcel() {
         try {
-            logger.info("Generating Excel.");
-//todo: why this does not work: createFile is false            File file = new File("C:\\prices\\price_" + LocalDateTime.now() + ".xlsx");
+            logger.info("Generating Excel...");
             LocalDateTime now = LocalDateTime.now();
-            File file = new File("price_" + Optional.ofNullable(fromDates.get(0)).orElse("0") + "(" + now.getHour() + "_" + now.getMinute() + ").xls");
-//            File file = new File("test1122");
+            File file = new File("price_" + Optional.ofNullable(fromDates.size() != 0 ? fromDates.get(0) : null).orElse("0") + "(" + now.getHour() + "_" + now.getMinute() + ").xls");
             if(!file.exists()) {
-//                boolean mkdirs = file.mkdirs();
-//                if(!mkdirs) {
-//                    logger.error("could not make dirs");
-//                }
-
                 boolean newFile = file.createNewFile();
                 if(!newFile) {
-                    logger.error("could not create file.");
+                    throw new IllegalArgumentException("could not create file.");
                 }
             }
             FileOutputStream fileOut = new FileOutputStream(file);
@@ -121,8 +115,6 @@ public class ExcelExporter {
             workbook.write(fileOut);
             fileOut.flush();
             fileOut.close();
-        }catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
