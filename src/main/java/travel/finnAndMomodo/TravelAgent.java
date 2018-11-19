@@ -6,9 +6,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import travel.domain.TicketInfo;
 
-import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -19,7 +18,7 @@ public class TravelAgent {
     private static Logger logger = Logger.getLogger(TravelAgent.class);
 
 
-    public static TicketInfo getPriceForFinn(WebDriver driver, String finnURLString) throws InterruptedException {
+    public static TicketInfo getPriceFromFinn(WebDriver driver, String finnURLString) throws InterruptedException {
         try {
             //        driver.manage().window().setPosition(new Point(-2000, 0));
             WebDriverWait wait = new WebDriverWait(driver, 90);
@@ -50,7 +49,7 @@ public class TravelAgent {
                 return ticketInfo;
             } catch (StaleElementReferenceException e) {
                 logger.error("should not be here" + e.toString());
-                return getPriceForFinn(driver, finnURLString);
+                return getPriceFromFinn(driver, finnURLString);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,22 +77,25 @@ public class TravelAgent {
             wait.ignoring(TimeoutException.class);
             driver.get(momondoURLString);
             try {
-                wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("div#searchProgressText"), "Search complete"));
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".finished")));
             } catch (TimeoutException e) {
                 logger.error(e.getMessage());
                 logger.error("weired!!");
                 return new TicketInfo();
             }
 
-            String cheapestPrice = driver.findElement(By.cssSelector("li.option.cheapest span.price")).getText();
-            String quickestPrice = driver.findElement(By.cssSelector("li.option.quickest span.price")).getText();
-            String bestPrice = driver.findElement(By.cssSelector("li.option.rating.bestdeal span.price")).getText();
-
-            NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
+            By cssSelector = By.cssSelector(".title.price");
             TicketInfo price = new TicketInfo();
-            price.setCheapest(numberFormat.parse(cheapestPrice).doubleValue() * 1000);
-            price.setQuickest(numberFormat.parse(quickestPrice).doubleValue() * 1000);
-            price.setBest(numberFormat.parse(bestPrice).doubleValue() * 1000);
+            ArrayList<String> prices = new ArrayList<>();
+            for (WebElement element : driver.findElements(cssSelector)) {
+                String pri = element.getText().replaceAll(" ", "");
+                prices.add(pri.substring(0, pri.length() - 3));
+            }
+
+
+            price.setCheapest(Double.valueOf(prices.get(0)));
+            price.setQuickest(Double.valueOf(prices.get(1)));
+            price.setBest(Double.valueOf(prices.get(2)));
 
             return price;
 

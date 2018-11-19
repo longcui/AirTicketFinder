@@ -85,7 +85,7 @@
 //
 //                        FinnCountry finnCountry = FinnCountry.valueOf(momondoCountry.name());
 //                        String finnURLString = getFinnURLString(finnCountry, from, to);
-//                        TicketInfo priceForFinn = TravelAgent.getPriceForFinn(driver, finnURLString);
+//                        TicketInfo priceForFinn = TravelAgent.getPriceFromFinn(driver, finnURLString);
 //                        logger.info("Finn:" + finnCountry + ":  " + from.getTime() + to.getTime() + ". price is: " + priceForFinn + "   " + finnURLString);
 //
 ////                        for (String recipient : DEBUG_EMAILS) {
@@ -124,9 +124,9 @@
 //
 //    private static String getMomondoURLString(MomondoCountry country, Calendar from, Calendar to) {
 //        String momondo = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=" + FROM_CITY + "&SD0=" + country.getCode() + "&SDP0=";
-//        momondo += sdfMo.format(from.getTime());
+//        momondo += sdfMomondo.format(from.getTime());
 //        momondo += "&SO1=" + country.code + "&SD1=" + FROM_CITY + "&SDP1=";
-//        momondo += sdfMo.format(to.getTime());
+//        momondo += sdfMomondo.format(to.getTime());
 //        momondo += "&AD=1&TK=ECO&DO=false&NA=false";
 //        return momondo;
 //    }

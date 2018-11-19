@@ -1,7 +1,9 @@
 package travel.domain;
 
 public class TicketInfo {
-    private double cheapest = Double.MAX_VALUE, quickest = Double.MAX_VALUE, best = Double.MAX_VALUE;
+    private double cheapest = Double.MAX_VALUE,
+            quickest = Double.MAX_VALUE,
+            best = Double.MAX_VALUE;
 
     public double getCheapest() {
         return cheapest;

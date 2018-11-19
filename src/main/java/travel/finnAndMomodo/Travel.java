@@ -35,12 +35,12 @@ public abstract class Travel {
     protected static List<TicketInfo> prices = new ArrayList<TicketInfo>();
     protected static List<String> bestPriceUrls = new ArrayList<String>();
 
-    protected static SimpleDateFormat sdfMo = new SimpleDateFormat("dd-M-YYYY");     //14-5-2015
+    protected static SimpleDateFormat sdfMomondo = new SimpleDateFormat("YYYY-MM-dd");     //14-5-2015
     protected static SimpleDateFormat sdfFin = new SimpleDateFormat("dd.MM.YYYY");     //14.05.2015
 
-    protected int MINIMAL_STAY_DAY = 25;
+    protected int MINIMAL_STAY_DAY = 55;
     //    private static int MINIMAL_STAY_DAY = 80;
-    protected int MAXIMAL_STAY_DAY = 35;
+    protected int MAXIMAL_STAY_DAY = 70;
 //    private static int MAXIMAL_STAY_DAY = 87;
 
     //    private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com", "newrala@gmail.com"};
@@ -90,14 +90,14 @@ public abstract class Travel {
     static String getMomondoURLString(String DepartFromCityCode, String DepartToCityCode,
                                       String ArriveFromCityCode, String ArriveToCityCode,
                                       Calendar from, Calendar to) {
-        String momondo = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=" +
-                DepartFromCityCode + "&SD0=" + DepartToCityCode + "&SDP0=";
-        momondo += sdfMo.format(from.getTime());
-        momondo += "&SO1=" + ArriveFromCityCode + "&SD1=" + ArriveToCityCode + "&SDP1=";
+        String momondo = "https://www.momondo.no/flight-search/" +
+                DepartFromCityCode + "-" + DepartToCityCode + "/";
+        momondo += sdfMomondo.format(from.getTime());
+        momondo += "/" + ArriveFromCityCode + "-" + ArriveToCityCode;
         if(to != null ){
-            momondo += sdfMo.format(to.getTime());
+            momondo += "/" + sdfMomondo.format(to.getTime());
         }
-        momondo += "&AD=1&TK=ECO&DO=false&NA=false";
+        momondo += "?sort=price_a&fs=stops=~1&attempt=3";
         return momondo;
     }
 
@@ -113,7 +113,7 @@ public abstract class Travel {
         } else {
             finn += "&tripType=oneway&requestedReturnDate=";
         }
-        finn += "&numberOfAdults=1&numberOfChildren=0&cabinType=economy";
+        finn += "&numberOfAdults=1&numberOfChildren=0&cabinType=economy&maximumNumberOfStops=1";
         return  finn;
     }
 
@@ -154,10 +154,10 @@ public abstract class Travel {
 
     public enum MomondoChinaPlace {
         SHANGHAI("SHA"),
-        BEIJING("BJS"),
-        XIAN("SIA"),
+        BEIJING("BJS");
+//        XIAN("SIA"),
         //        GUANGZHOU("CAN"),
-        NANJING("NKG");
+//        NANJING("NKG");
 
         private String code;
         private MomondoChinaPlace(String code) {

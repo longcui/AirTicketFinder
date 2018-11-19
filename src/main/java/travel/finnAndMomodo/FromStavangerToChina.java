@@ -52,18 +52,26 @@ class FromStavangerToChina extends Travel {
 //                    System.out.println(from.getTime() + "-------" + to.getTime());
                     for (MomondoNorwayPlace momondoFromNorwayPlace : MomondoNorwayPlace.values()) {
                         FinnNorwayPlace finnFromNorwayPlace = FinnNorwayPlace.valueOf(momondoFromNorwayPlace.name());
-                        for (MomondoChinaPlace momondoToChinaPlace : MomondoChinaPlace.values()) {
+//                        for (MomondoChinaPlace momondoToChinaPlace : MomondoChinaPlace.values())
+                        {
+                            MomondoChinaPlace momondoToChinaPlace = MomondoChinaPlace.SHANGHAI;
                             FinnChinaPlace finnToChinaPlace = FinnChinaPlace.valueOf(momondoToChinaPlace.name());
-                            for (MomondoChinaPlace momondoFromChinaPlace : MomondoChinaPlace.values()) {
+                            for (MomondoChinaPlace momondoFromChinaPlace : MomondoChinaPlace.values())
+                            {
                                 FinnChinaPlace finnFromChinaPlace = FinnChinaPlace.valueOf(momondoFromChinaPlace.name());
                                 for (MomondoNorwayPlace momondoToNorwayPlace : MomondoNorwayPlace.values()) {
                                     FinnNorwayPlace finnToNorwayPlace = FinnNorwayPlace.valueOf(momondoToNorwayPlace.name());
                                     String momondoURLString = getMomondoURLString(momondoFromNorwayPlace.getCode(), momondoToChinaPlace.getCode(), momondoFromChinaPlace.getCode(), momondoToNorwayPlace.getCode(), from, to);
-                                    TicketInfo priceFromMomondo = new TicketInfo();
                                     String finnURLString = getFinnURLString(finnFromNorwayPlace.getCode(), finnToChinaPlace.getCode(), finnFromChinaPlace.getCode(), finnToNorwayPlace.getCode(), from, to);
                                     try {
-                                        TicketInfo priceForFinn = TravelAgent.getPriceForFinn(driver, finnURLString);
-                                        logger.info("Finn   :" + finnFromNorwayPlace + "-" + finnToChinaPlace + "-" + finnFromChinaPlace + "-" + finnToNorwayPlace + ": " + from.getTime() + " " + (to == null ? null : to.getTime()) + ". price is: " + priceForFinn);
+//                                      TicketInfo priceFromMomondo = new TicketInfo();
+                                        TicketInfo priceFromMomondo = TravelAgent.getPriceFromMomondo(driver, momondoURLString);
+                                        logger.info("Momondo   :" + momondoFromNorwayPlace + "-" + momondoToChinaPlace + "-" + momondoFromChinaPlace + "-" + momondoToNorwayPlace + ": " + from.getTime() + " " + (to == null ? null : to.getTime()) + ". price is: " + priceFromMomondo);
+
+                                        TicketInfo priceForFinn = new TicketInfo();
+//                                      TicketInfo priceForFinn = TravelAgent.getPriceFromFinn(driver, finnURLString);
+//                                        logger.info("Finn   :" + finnFromNorwayPlace + "-" + finnToChinaPlace + "-" + finnFromChinaPlace + "-" + finnToNorwayPlace + ": " + from.getTime() + " " + (to == null ? null : to.getTime()) + ". price is: " + priceForFinn);
+
                                         prepareWritingToExcel(momondoFromNorwayPlace.name(), momondoToChinaPlace.name(), momondoFromChinaPlace.name(), momondoToNorwayPlace.name(),
                                                 from.getTime(), (to == null ? null : to.getTime()), priceForFinn, finnURLString);
 
@@ -98,7 +106,7 @@ class FromStavangerToChina extends Travel {
 //                sleep(SLEEP_TIME);
 
 //                sleep(DEBUG_SLEEP_TIME * random.nextInt(10));
-                sleep(SLEEP_TIME * random.nextInt(10));
+//                sleep(SLEEP_TIME * random.nextInt(10));
                 from.add(Calendar.DAY_OF_MONTH, 1);
 
                 ExcelExporter excelExporter = new ExcelExporter(fromChinaCities, toNorwayCities, fromNorwayCities, toChinaCities,

@@ -77,7 +77,7 @@ public class FromChinaTravel extends Travel{
 
                                     //                        double priceFromMomondo = 99999;
                                     String finnURLString = getFinnURLString(finnFromChinaPlace.getCode(), finnToNorwayPlace.getCode(), finnFromNorwayPlace.getCode(), finnToChinaPlace.getCode(), from, to);
-                                    TicketInfo priceForFinn = TravelAgent.getPriceForFinn(
+                                    TicketInfo priceForFinn = TravelAgent.getPriceFromFinn(
                                             driver, finnURLString);
                                     //                        double priceForFinn = 555;
                                     logger.info("Finn   :" + finnFromChinaPlace + "-" + finnToNorwayPlace + "-" + finnFromNorwayPlace + "-" + finnToChinaPlace +  ": " + from.getTime() + " " + (to == null? null : to.getTime() ) + ". price is: " + priceForFinn);
