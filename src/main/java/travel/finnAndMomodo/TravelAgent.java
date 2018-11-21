@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import travel.domain.TicketInfo;
+import travel.domain.TicketPrice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class TravelAgent {
     private static Logger logger = Logger.getLogger(TravelAgent.class);
 
 
-    public static TicketInfo getPriceFromFinn(WebDriver driver, String finnURLString) throws InterruptedException {
+    public static TicketPrice getPriceFromFinn(WebDriver driver, String finnURLString) throws InterruptedException {
         try {
             //        driver.manage().window().setPosition(new Point(-2000, 0));
             WebDriverWait wait = new WebDriverWait(driver, 90);
@@ -36,7 +36,7 @@ public class TravelAgent {
 //                By descriAndTimes = By.cssSelector(".mtt.stone.inline-banner-board.smalltext");
 
                 List<WebElement> elements = driver.findElements(cssSelector);
-                TicketInfo ticketInfo = new TicketInfo();
+                TicketPrice ticketInfo = new TicketPrice();
                 String finnDurAndPrice = elements.get(0).getText();
                 finnDurAndPrice = finnDurAndPrice.replaceAll(" ", "");
                 ticketInfo.setCheapest(Double.parseDouble(finnDurAndPrice.split(",")[1]));
@@ -68,7 +68,7 @@ public class TravelAgent {
 //        }
 //    }
 
-    public static TicketInfo getPriceFromMomondo(WebDriver driver, String momondoURLString) {
+    public static TicketPrice getPriceFromMomondo(WebDriver driver, String momondoURLString) {
         try {
             //        driver.manage().window().setPosition(new Point(-2000, 0));
             //        Dimension windowMinSize = new Dimension(100,100);
@@ -81,11 +81,11 @@ public class TravelAgent {
             } catch (TimeoutException e) {
                 logger.error(e.getMessage());
                 logger.error("weired!!");
-                return new TicketInfo();
+                return new TicketPrice();
             }
 
             By cssSelector = By.cssSelector(".title.price");
-            TicketInfo price = new TicketInfo();
+            TicketPrice price = new TicketPrice();
             ArrayList<String> prices = new ArrayList<>();
             for (WebElement element : driver.findElements(cssSelector)) {
                 String pri = element.getText().replaceAll(" ", "");
@@ -122,7 +122,7 @@ public class TravelAgent {
 //            }
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return new TicketInfo();
+            return new TicketPrice();
         }
     }
 }

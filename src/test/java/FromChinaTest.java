@@ -1,5 +1,4 @@
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
 import travel.finnAndMomodo.FromChinaTravel;
 
 import java.io.FileNotFoundException;
@@ -60,15 +59,15 @@ public class FromChinaTest {
             HSSFCell cellA1 = row1.createCell((short) 0);
             cellA1.setCellValue("Hello");
             HSSFCellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
-            cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+//            cellStyle.setFillForegroundColor(HSSFColor.GOLD.index);
+//            cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
             cellA1.setCellStyle(cellStyle);
 
             HSSFCell cellB1 = row1.createCell((short) 1);
             cellB1.setCellValue("Goodbye");
             cellStyle = workbook.createCellStyle();
-            cellStyle.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
-            cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+//            cellStyle.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+//            cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
             cellB1.setCellStyle(cellStyle);
 
             HSSFCell cellC1 = row1.createCell((short) 2);

@@ -4,11 +4,11 @@ import org.openqa.selenium.WebDriver;
 import travel.browser.SeleniumWebDriverFirefox;
 import travel.domain.TicketInfo;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static utils.EmailUtils.sendEmail;
 
@@ -23,20 +23,11 @@ public abstract class Travel {
     protected static boolean enableEmailNotification = true;
 
 
-    protected static List<String> fromChinaCities = new ArrayList<String>();
-    protected static List<String> toNorwayCities = new ArrayList<String>();
+    protected static List<TicketInfo> ticketInfos = new ArrayList<TicketInfo>();
 
-    protected static List<String> fromNorwayCities = new ArrayList<String>();
-    protected static List<String> toChinaCities = new ArrayList<String>();
 
-    protected static List<String> fromDates = new ArrayList<String>();
-    protected static List<String> toDates = new ArrayList<String>();
-
-    protected static List<TicketInfo> prices = new ArrayList<TicketInfo>();
-    protected static List<String> bestPriceUrls = new ArrayList<String>();
-
-    protected static SimpleDateFormat sdfMomondo = new SimpleDateFormat("YYYY-MM-dd");     //14-5-2015
-    protected static SimpleDateFormat sdfFin = new SimpleDateFormat("dd.MM.YYYY");     //14.05.2015
+    protected static DateTimeFormatter momondoIsoLocalDate = DateTimeFormatter.ISO_LOCAL_DATE;
+    protected static DateTimeFormatter sdfFin = DateTimeFormatter.ofPattern("dd.MM.YYYY");     //14.05.2015
 
     protected int MINIMAL_STAY_DAY = 55;
     //    private static int MINIMAL_STAY_DAY = 80;
@@ -47,15 +38,20 @@ public abstract class Travel {
     private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com"};
     private static String[] DEBUG_EMAILS = new String[]{"dragonworld1988@gmail.com"};
 
-    protected final static Calendar start = Calendar.getInstance();
-    protected final static Calendar end = Calendar.getInstance();
+    protected LocalDate start;
+    protected LocalDate end;
 
     Random random = new Random();
+
+    public enum TripType {
+        ONEWAY,
+        TUR_RETUR;
+    }
 
     void populateParams(String[] args) {
         String startStr = System.getProperty("start");
         if(startStr != null) {
-            start.setTime(Date.from(LocalDate.parse(startStr, DateTimeFormatter.ISO_DATE).atStartOfDay().toInstant(ZoneOffset.UTC)));
+            start = LocalDate.parse(startStr, DateTimeFormatter.ISO_DATE);
         }
 
         if(args.length > 1 && args[0].equals("short")) {
@@ -68,34 +64,23 @@ public abstract class Travel {
 
         String endStr = System.getProperty("end");
         if(endStr != null) {
-            end.setTime(Date.from(LocalDate.parse(endStr, DateTimeFormatter.ISO_DATE).atStartOfDay().toInstant(ZoneOffset.UTC)));
+            end = LocalDate.parse(endStr, DateTimeFormatter.ISO_DATE);
         }
     }
 
 
-    static void prepareWritingToExcel(String fromChinaCity, String toNorwayCity, String fromNorwayCity, String toChinaCity, Date from, Date to, TicketInfo price, String bestPriceURL) {
-        fromChinaCities.add(fromChinaCity);
-        toNorwayCities.add(toNorwayCity);
-        fromNorwayCities.add(fromNorwayCity);
-        toChinaCities.add(toChinaCity);
-        fromDates.add(sdfFin.format(from));
-        if(to != null) {
-            toDates.add(sdfFin.format(to));
-        }
-        prices.add(price);
-        bestPriceUrls.add(bestPriceURL);
-    }
 
 
     static String getMomondoURLString(String DepartFromCityCode, String DepartToCityCode,
                                       String ArriveFromCityCode, String ArriveToCityCode,
-                                      Calendar from, Calendar to) {
+                                      LocalDate from, LocalDate to) {
         String momondo = "https://www.momondo.no/flight-search/" +
                 DepartFromCityCode + "-" + DepartToCityCode + "/";
-        momondo += sdfMomondo.format(from.getTime());
+
+        momondo += from.format(momondoIsoLocalDate);
         momondo += "/" + ArriveFromCityCode + "-" + ArriveToCityCode;
         if(to != null ){
-            momondo += "/" + sdfMomondo.format(to.getTime());
+            momondo += "/" + to.format(momondoIsoLocalDate);
         }
         momondo += "?sort=price_a&fs=stops=~1&attempt=3";
         return momondo;
@@ -103,12 +88,12 @@ public abstract class Travel {
 
     //    https://www.finn.no/reise/flybilletter/resultat?tripType=openjaw&requestedOrigin=BGO.AIRPORT&requestedDestination=OSL.METROPOLITAN_AREA&requestedDepartureDate=16.03.2018&requestedOrigin2=SVG.AIRPORT
     // &requestedDestination2=PVG.AIRPORT&requestedReturnDate=04.06.2018&numberOfAdults=1&cabinType=economy
-    static String getFinnURLString(String DepartFromCityCode, String DepartToCityCode, String ArriveFromCityCode, String ArriveToCityCode, Calendar from, Calendar to) {
+    static String getFinnURLString(String DepartFromCityCode, String DepartToCityCode, String ArriveFromCityCode, String ArriveToCityCode, LocalDate from, LocalDate to) {
         String finn = "https://www.FINN.no/reise/flybilletter/resultat?"
                 + "requestedOrigin="  + DepartFromCityCode + "&requestedDestination=" + DepartToCityCode;
-        finn += "&requestedDepartureDate=" + sdfFin.format(from.getTime());
+        finn += "&requestedDepartureDate=" + from;
         if(to != null) {
-            finn += "&tripType=openjaw&requestedReturnDate=" + sdfFin.format(to.getTime());
+            finn += "&tripType=openjaw&requestedReturnDate=" + to.format(sdfFin);
             finn += "&requestedOrigin2=" + ArriveFromCityCode + "&requestedDestination2=" + ArriveToCityCode;
         } else {
             finn += "&tripType=oneway&requestedReturnDate=";

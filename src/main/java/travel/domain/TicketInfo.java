@@ -1,40 +1,87 @@
 package travel.domain;
 
-public class TicketInfo {
-    private double cheapest = Double.MAX_VALUE,
-            quickest = Double.MAX_VALUE,
-            best = Double.MAX_VALUE;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    public double getCheapest() {
-        return cheapest;
+import java.time.LocalDate;
+
+public class TicketInfo implements Comparable<TicketInfo>{
+    /*
+    departure
+     */
+    @NotNull
+    private final String outboundFrom, outboundTo;
+    @NotNull
+    private final LocalDate outboundDate;
+
+    /**
+     * Return
+     */
+    @Nullable
+    private final String inboundFrom, inboundTo;
+    @Nullable
+    private final LocalDate inboundDate;
+
+    @NotNull
+    private final TicketPrice ticketPrice;
+
+    @NotNull
+    private final String priceUrl;
+
+    public TicketInfo(@NotNull String outboundFrom, @NotNull String outboundTo, @NotNull LocalDate outboundDate,
+                      @NotNull String inboundFrom, @NotNull String inboundTo, @Nullable LocalDate inboundDate,
+                      @NotNull TicketPrice ticketPrice, @NotNull String priceUrl) {
+        this.outboundFrom = outboundFrom;
+        this.outboundTo = outboundTo;
+        this.outboundDate = outboundDate;
+        this.inboundFrom = inboundFrom;
+        this.inboundTo = inboundTo;
+        this.inboundDate = inboundDate;
+        this.ticketPrice = ticketPrice;
+        this.priceUrl = priceUrl;
     }
 
-    public void setCheapest(double cheapest) {
-        this.cheapest = cheapest;
+    public String getOutboundFrom() {
+        return outboundFrom;
     }
 
-    public double getQuickest() {
-        return quickest;
+    public String getOutboundTo() {
+        return outboundTo;
     }
 
-    public void setQuickest(double quickest) {
-        this.quickest = quickest;
+    public LocalDate getOutboundDate() {
+        return outboundDate;
     }
 
-    public double getBest() {
-        return best;
+    public String getInboundFrom() {
+        return inboundFrom;
     }
 
-    public void setBest(double best) {
-        this.best = best;
+    public String getInboundTo() {
+        return inboundTo;
     }
+
+    public LocalDate getInboundDate() {
+        return inboundDate;
+    }
+
+
+    @NotNull
+    public String getInboundDateTimeString() {
+        return inboundDate == null? "" : inboundDate.toString();
+    }
+
+    public TicketPrice getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public String getPriceUrl() {
+        return priceUrl;
+    }
+
 
     @Override
-    public String toString() {
-        return "TicketInfo{" +
-                "cheapest=" + cheapest +
-                ", quickest=" + quickest +
-                ", best=" + best +
-                '}';
+    public int compareTo(@NotNull TicketInfo o) {
+        return ticketPrice.compareTo(o.getTicketPrice());
     }
 }
