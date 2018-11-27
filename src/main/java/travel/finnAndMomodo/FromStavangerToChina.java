@@ -36,13 +36,14 @@ class FromStavangerToChina extends Travel {
             LocalDate lastPossibleLeaveDay = end.plusDays(-MINIMAL_STAY_DAY);
 
             while (from.isBefore(lastPossibleLeaveDay)) {
+                to = start.plusDays(MINIMAL_STAY_DAY);
                 do {
 //                    System.out.println(from.getTime() + "-------" + to.getTime());
                     for (MomondoNorwayPlace momondoFromNorwayPlace : MomondoNorwayPlace.values()) {
                         FinnNorwayPlace finnFromNorwayPlace = FinnNorwayPlace.valueOf(momondoFromNorwayPlace.name());
-//                        for (MomondoChinaPlace momondoToChinaPlace : MomondoChinaPlace.values())
+                        for (MomondoChinaPlace momondoToChinaPlace : MomondoChinaPlace.values())
                         {
-                            MomondoChinaPlace momondoToChinaPlace = MomondoChinaPlace.SHANGHAI;
+                             momondoToChinaPlace = MomondoChinaPlace.SHANGHAI;
                             FinnChinaPlace finnToChinaPlace = FinnChinaPlace.valueOf(momondoToChinaPlace.name());
                             for (MomondoChinaPlace momondoFromChinaPlace : MomondoChinaPlace.values())
                             {
@@ -52,18 +53,22 @@ class FromStavangerToChina extends Travel {
                                     String momondoURLString = getMomondoURLString(momondoFromNorwayPlace.getCode(), momondoToChinaPlace.getCode(), momondoFromChinaPlace.getCode(), momondoToNorwayPlace.getCode(), from, to);
                                     String finnURLString = getFinnURLString(finnFromNorwayPlace.getCode(), finnToChinaPlace.getCode(), finnFromChinaPlace.getCode(), finnToNorwayPlace.getCode(), from, to);
                                     try {
-//                                      TicketInfo priceFromMomondo = new TicketInfo();
+//                                        TicketPrice priceFromMomondo = new TicketPrice();
                                         TicketPrice priceFromMomondo = TravelAgent.getPriceFromMomondo(driver, momondoURLString);
                                         logger.info("Momondo   :" + momondoFromNorwayPlace + "-" + momondoToChinaPlace + "-" + momondoFromChinaPlace + "-" + momondoToNorwayPlace + ": " + from + " " + to + ". price is: " + priceFromMomondo + "url: " + momondoURLString);
-
-                                        TicketPrice priceForFinn = new TicketPrice();
-//                                      TicketInfo priceForFinn = TravelAgent.getPriceFromFinn(driver, finnURLString);
-//                                        logger.info("Finn   :" + finnFromNorwayPlace + "-" + finnToChinaPlace + "-" + finnFromChinaPlace + "-" + finnToNorwayPlace + ": " + from.getTime() + " " + (to == null ? null : to.getTime()) + ". price is: " + priceForFinn);
-
-                                        TicketInfo ticketInfo = new TicketInfo(momondoFromNorwayPlace.name(), momondoToChinaPlace.name(), from,
+                                        TicketInfo ticketInfoMomondo = new TicketInfo(momondoFromNorwayPlace.name(), momondoToChinaPlace.name(), from,
                                                 momondoFromChinaPlace.name(), momondoToNorwayPlace.name(), to,
-                                                priceForFinn, finnURLString);
-                                        ticketInfos.add(ticketInfo);
+                                                priceFromMomondo, momondoURLString);
+                                        ticketInfos.add(ticketInfoMomondo);
+
+                                        //Finn could not show the cheapest based on the filter that max transfer 1 time
+//                                        TicketPrice priceForFinn = new TicketPrice();
+//                                        TicketPrice priceForFinn = TravelAgent.getPriceFromFinn(driver, finnURLString);
+//                                        logger.info("Finn   :" + finnFromNorwayPlace + "-" + finnToChinaPlace + "-" + finnFromChinaPlace + "-" + finnToNorwayPlace + ": " + from + " " + to + ". price is: " + priceForFinn + "url: " + finnURLString);
+//                                        TicketInfo ticketInfoFinn = new TicketInfo(finnFromNorwayPlace.name(), finnToChinaPlace.name(), from,
+//                                                finnFromChinaPlace.name(), finnToNorwayPlace.name(), to,
+//                                                priceForFinn, finnURLString);
+//                                        ticketInfos.add(ticketInfoFinn);
 
                                         if (enableEmailNotification) {
 
@@ -74,7 +79,7 @@ class FromStavangerToChina extends Travel {
                                     //                        for (String recipient : DEBUG_EMAILS) {
                                     //                            sendEmail(recipient, String.valueOf(bestPrice) + from.getTime() + to.getTime(), bestPriceURL);
                                     //                        }
-                                    Thread.sleep(random.nextInt(200) * 1000);
+                                    Thread.sleep(random.nextInt(100) * 1000);
 //                        }
                                     if (to == null) {
                                         break;
@@ -87,12 +92,9 @@ class FromStavangerToChina extends Travel {
                         }
                     }
                 } while (to != null && to.isBefore(toMax) && to.isBefore(end));
-//                sleep(SLEEP_TIME);
-
 //                sleep(DEBUG_SLEEP_TIME * random.nextInt(10));
 //                sleep(SLEEP_TIME * random.nextInt(10));
                 from = from.plusDays(1);
-
             }
             ExcelExporter excelExporter = new ExcelExporter(ticketInfos);
             excelExporter.writeToExcel();

@@ -84,4 +84,18 @@ public class TicketInfo implements Comparable<TicketInfo>{
     public int compareTo(@NotNull TicketInfo o) {
         return ticketPrice.compareTo(o.getTicketPrice());
     }
+
+    @Override
+    public String toString() {
+        return "TicketInfo{" +
+                "outboundFrom='" + outboundFrom + '\'' +
+                ", outboundTo='" + outboundTo + '\'' +
+                ", outboundDate=" + outboundDate +
+                ", inboundFrom='" + inboundFrom + '\'' +
+                ", inboundTo='" + inboundTo + '\'' +
+                ", inboundDate=" + inboundDate +
+                ", ticketPrice=" + ticketPrice +
+                ", priceUrl='" + priceUrl + '\'' +
+                '}';
+    }
 }

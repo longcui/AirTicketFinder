@@ -29,10 +29,8 @@ public abstract class Travel {
     protected static DateTimeFormatter momondoIsoLocalDate = DateTimeFormatter.ISO_LOCAL_DATE;
     protected static DateTimeFormatter sdfFin = DateTimeFormatter.ofPattern("dd.MM.YYYY");     //14.05.2015
 
-    protected int MINIMAL_STAY_DAY = 55;
-    //    private static int MINIMAL_STAY_DAY = 80;
-    protected int MAXIMAL_STAY_DAY = 70;
-//    private static int MAXIMAL_STAY_DAY = 87;
+    protected int MINIMAL_STAY_DAY;
+    protected int MAXIMAL_STAY_DAY;
 
     //    private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com", "newrala@gmail.com"};
     private static String[] EMAILS = new String[]{"dragonworld1988@gmail.com"};
@@ -54,12 +52,14 @@ public abstract class Travel {
             start = LocalDate.parse(startStr, DateTimeFormatter.ISO_DATE);
         }
 
-        if(args.length > 1 && args[0].equals("short")) {
+        String minMaxStayDay = System.getProperty("minMaxStayDay");
+        if(minMaxStayDay != null) {
+            String[] strings = minMaxStayDay.split(",");
+            MINIMAL_STAY_DAY = Integer.parseInt(strings[0]);
+            MAXIMAL_STAY_DAY = Integer.parseInt(strings[1]);
+        } else {
             MINIMAL_STAY_DAY = 25;
             MAXIMAL_STAY_DAY = 35;
-        } else {
-            MINIMAL_STAY_DAY = 45;
-            MAXIMAL_STAY_DAY = 75;
         }
 
         String endStr = System.getProperty("end");
