@@ -43,7 +43,7 @@
 //        for (FromChinaTravel.MomondoChinaPlace country : FromChinaTravel.MomondoChinaPlace.values()) {
 //            System.out.println(country.toString());
 //            System.out.println(country.name());
-//            System.out.println(country.getCode());
+//            System.out.println(country.getIataCode());
 //        }
 //    }
 //

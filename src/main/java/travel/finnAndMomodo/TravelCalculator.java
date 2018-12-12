@@ -123,7 +123,7 @@
 //    }
 //
 //    private static String getMomondoURLString(MomondoCountry country, Calendar from, Calendar to) {
-//        String momondo = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=" + FROM_CITY + "&SD0=" + country.getCode() + "&SDP0=";
+//        String momondo = "http://www.MOMONDO.com/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=" + FROM_CITY + "&SD0=" + country.getIataCode() + "&SDP0=";
 //        momondo += sdfMomondo.format(from.getTime());
 //        momondo += "&SO1=" + country.code + "&SD1=" + FROM_CITY + "&SDP1=";
 //        momondo += sdfMomondo.format(to.getTime());
@@ -270,7 +270,7 @@
 //            this.travelType = travelType;
 //        }
 //
-//        public String getCode() {
+//        public String getIataCode() {
 //            return code;
 //        }
 //
@@ -316,7 +316,7 @@
 //            this.travelType = travelType;
 //        }
 //
-//        public String getCode() {
+//        public String getIataCode() {
 //            return code;
 //        }
 //

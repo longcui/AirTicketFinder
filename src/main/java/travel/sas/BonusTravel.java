@@ -13,8 +13,8 @@ import java.util.Scanner;
 
 public class BonusTravel extends Travel {
     public enum ChinaCityCode {
-        BEIJING("PEK");
-//        SHANGHAI("PVG");
+        BEIJING("PEK"),
+        SHANGHAI("PVG");
 
         String des;
 
@@ -26,8 +26,8 @@ public class BonusTravel extends Travel {
     public static void main(String[] args) throws IOException, InterruptedException {
         while (true) {
             for (ChinaCityCode chinaCityCode : ChinaCityCode.values()) {
-                LocalDate localDate = LocalDate.of(2018, 6, 27);
-                for (int i = 0; i < 6; i++) {
+                LocalDate localDate = LocalDate.of(2019, 8, 13);
+                for (int i = 0; i < 19; i++) {
                     localDate = localDate.plusDays(1);
                     String stringDate = localDate.format(DateTimeFormatter.BASIC_ISO_DATE);
                     URL url = new URL("https://api.flysas.com/offers/flights?to=SVG&from=" + chinaCityCode.des +  "&outDate=" + stringDate + "&adt=2&chd=0&inf=0&yth=0&bookingFlow=points&pos=no&channel=web&displayType=upsell");
@@ -39,7 +39,7 @@ public class BonusTravel extends Travel {
                     if (!reply.startsWith("{\"errors\":[{\"errorCode\"")) {
                         EmailUtils.sendEmail("longcuino@gmail.com", "Bonus Travel Changed: " + reply, reply);
                     }
-                    Thread.sleep(5 * 60 * 1000);
+                    Thread.sleep(5 * 60 * 100);
                 }
             }
 

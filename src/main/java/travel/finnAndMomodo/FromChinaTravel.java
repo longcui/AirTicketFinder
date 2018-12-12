@@ -66,7 +66,7 @@
 //                                for (MomondoChinaPlace momondoToChinaPlace : MomondoChinaPlace.values()) {
 //                                    FinnChinaPlace finnToChinaPlace = FinnChinaPlace.valueOf(momondoToChinaPlace.name());
 //
-//                                    String momondoURLString = getMomondoURLString(momondoFromChinaPlace.getCode(), momondoToNorwayPlace.getCode(), momondoFromNorwayPlace.getCode(), momondoToChinaPlace.getCode(), from, to);
+//                                    String momondoURLString = getMomondoURLString(momondoFromChinaPlace.getIataCode(), momondoToNorwayPlace.getIataCode(), momondoFromNorwayPlace.getIataCode(), momondoToChinaPlace.getIataCode(), from, to);
 //                                    TicketPrice priceFromMomondo = new TicketPrice();
 ////                                    TicketInfo priceFromMomondo = TravelAgent.getPriceFromMomondo(
 ////                                            driver, momondoURLString);
@@ -76,7 +76,7 @@
 //
 //
 //                                    //                        double priceFromMomondo = 99999;
-//                                    String finnURLString = getFinnURLString(finnFromChinaPlace.getCode(), finnToNorwayPlace.getCode(), finnFromNorwayPlace.getCode(), finnToChinaPlace.getCode(), from, to);
+//                                    String finnURLString = getFinnURLString(finnFromChinaPlace.getIataCode(), finnToNorwayPlace.getIataCode(), finnFromNorwayPlace.getIataCode(), finnToChinaPlace.getIataCode(), from, to);
 //                                    TicketPrice priceForFinn = TravelAgent.getPriceFromFinn(
 //                                            driver, finnURLString);
 //                                    //                        double priceForFinn = 555;

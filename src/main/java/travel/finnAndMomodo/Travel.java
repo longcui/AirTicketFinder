@@ -40,6 +40,10 @@ public abstract class Travel {
     protected LocalDate end;
 
     Random random = new Random();
+    private String[] froms;
+    private String[] tos;
+    private String[] from2s;
+    private String[] to2s;
 
     public enum TripType {
         ONEWAY,
@@ -66,7 +70,13 @@ public abstract class Travel {
         if(endStr != null) {
             end = LocalDate.parse(endStr, DateTimeFormatter.ISO_DATE);
         }
+
+        froms = System.getProperty("from").split(",");
+        tos = System.getProperty("to").split(",");
+        from2s = System.getProperty("from2").split(",");
+        to2s = System.getProperty("to2").split(",");
     }
+
 
 
 
@@ -121,68 +131,38 @@ public abstract class Travel {
             }
     }
 
-    public enum FinnNorwayPlace {
-        STAVANGER("SVG.AIRPORT"),
-        BERGEN("BGO.AIRPORT"),
-        OSLO("OSL.METROPOLITAN_AREA");
 
-        private String code;
-        private FinnNorwayPlace(String code) {
-            this.code = code;
+
+
+    public enum CITY {
+        STAVANGER("SVG", "SVG.AIRPORT"),
+        BERGEN("BGO", "BGO.AIRPORT"),
+        OSLO("OSL", "OSL.METROPOLITAN_AREA"),
+
+        SHANGHAI("PVG", "SHA.METROPOLITAN_AREA"),
+        BEIJING("PEK", "BJS.METROPOLITAN_AREA"),
+        XIAN("SIA", "XIY.AIRPORT"),
+        GUANGZHOU("CAN", "CAN.AIRPORT"),
+        NANJING("NKG", "NKG.AIRPORT");
+
+        private String iataCode;
+        private String finnCode;
+
+        CITY(String code, String finnCode) {
+            this.iataCode = code;
+            this.finnCode = finnCode;
         }
 
-        public String getCode() {
-            return code;
-        }
-    }
-
-
-    public enum MomondoChinaPlace {
-        SHANGHAI("SHA"),
-        BEIJING("BJS");
-//        XIAN("SIA"),
-        //        GUANGZHOU("CAN"),
-//        NANJING("NKG");
-
-        private String code;
-        private MomondoChinaPlace(String code) {
-            this.code = code;
+        public String getIataCode() {
+            return iataCode;
         }
 
-        public String getCode() {
-            return code;
-        }
-    }
-
-    public enum MomondoNorwayPlace {
-        STAVANGER("SVG");
-//        BERGEN("BGO"),
-//        OSLO("OSL");
-
-        private String code;
-        private MomondoNorwayPlace(String code) {
-            this.code = code;
+        public String getFinnCode() {
+            return finnCode;
         }
 
-        public String getCode() {
-            return code;
-        }
-    }
-
-    public enum FinnChinaPlace {
-        SHANGHAI("SHA.METROPOLITAN_AREA"),
-        BEIJING("BJS.METROPOLITAN_AREA"),
-        XIAN("XIY.AIRPORT"),
-        GUANGZHOU("CAN.AIRPORT"),
-        NANJING("NKG.AIRPORT");
-
-        private String code;
-        private FinnChinaPlace(String code) {
-            this.code = code;
-        }
-
-        public String getCode() {
-            return code;
+        public String getMomondoCode() {
+            return iataCode;
         }
     }
 
