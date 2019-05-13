@@ -13,28 +13,29 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
  * Created by long on 15.03.2016.
- * get prices of next 12 months
  */
-public class WizzWeekendsPriceV1 {
 
-    private static Logger logger = Logger.getLogger(WizzWeekendsPriceV1.class);
+public class WizzWeekendsPrice {
+
+    private static Logger logger = Logger.getLogger(WizzWeekendsPrice.class);
 
 
-    private enum AIRPORT_NAME {
+    private enum AirportName {
         STAVANGER("SVG"),
         KATOWICE("KTW"),
-        RIGA("RIX"),
+//        RIGA("RIX"),
         SZCZECIN("SZZ"),
         CILNIUS("VNO"),
         KAUNAS("KUN"),
         GDANSK("GDN");
 
-        AIRPORT_NAME(String name) {
+        AirportName(String name) {
             airportShortName = name;
         }
         private final String airportShortName;
@@ -45,11 +46,11 @@ public class WizzWeekendsPriceV1 {
     }
 
     private class TravelOption implements Comparable{
-        AIRPORT_NAME AIRPORT_name;
-        LocalDate fromDate, toDate;
+        AirportName airportName;
+        LocalDateTime fromDate, toDate;
 
-        TravelOption(AIRPORT_NAME AIRPORT_name, LocalDate fromDate, LocalDate toDate, int fromPrice, int toPrice) {
-            this.AIRPORT_name = AIRPORT_name;
+        TravelOption(AirportName airportName, LocalDateTime fromDate, LocalDateTime toDate, int fromPrice, int toPrice) {
+            this.airportName = airportName;
             this.fromDate = fromDate;
             this.toDate = toDate;
             this.fromPrice = fromPrice;
@@ -60,7 +61,7 @@ public class WizzWeekendsPriceV1 {
         public String toString() {
             double totalPrice = fromPrice + toPrice;
             return "TravelOption{" +
-                    "air_port_name=" + AIRPORT_name +
+                    "air_port_name=" + airportName +
                     ", fromDate=" + fromDate +
                     ", toDate=" + toDate +
                     ", fromPrice=" + fromPrice +
@@ -71,11 +72,11 @@ public class WizzWeekendsPriceV1 {
 
         int fromPrice, toPrice;
 
-        public LocalDate getFromDate() {
+        public LocalDateTime getFromDate() {
             return fromDate;
         }
 
-        public LocalDate getToDate() {
+        public LocalDateTime getToDate() {
             return toDate;
         }
 
@@ -106,7 +107,7 @@ public class WizzWeekendsPriceV1 {
      * @param month
      * @return
      */
-    public String getWizzUrl(AIRPORT_NAME from, AIRPORT_NAME to, int year, int month) {
+    public String getWizzUrl(AirportName from, AirportName to, int year, int month) {
         return "https://cdn.static.wizzair.com/en-GB/TimeTableAjax?departureIATA=" +
                 from.getAirportShortName()
                 +"&arrivalIATA=" +
@@ -117,8 +118,8 @@ public class WizzWeekendsPriceV1 {
                 month;
     }
 
-    public HashMap<LocalDate, Integer> getPrices(AIRPORT_NAME from, AIRPORT_NAME to, int year, int month) {
-        HashMap<LocalDate, Integer> rets = new HashMap<LocalDate, Integer>();
+    public HashMap<LocalDateTime, Integer> getPrices(AirportName from, AirportName to, int year, int month) {
+        HashMap<LocalDateTime, Integer> rets = new HashMap<LocalDateTime, Integer>();
         try {
             String wizzUrl = getWizzUrl(from, to, year, month);
             logger.info("wizzUrl: " + wizzUrl);
@@ -144,15 +145,6 @@ public class WizzWeekendsPriceV1 {
                     JSONObject jsonObject = (JSONObject) iterator.next();
                     Object minimumPrice = jsonObject.get("MinimumPrice");
                     if(minimumPrice != null){
-                        Object date = jsonObject.get("Date");
-                        if(date == null){
-                            logger.error("Date is null.");
-                            continue;
-                        }
-                        //                            Date yyyyMMdd = new SimpleDateFormat("yyyyMMdd").parse(date.toString());
-                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                        LocalDate localDate = LocalDate.parse((String) date, dateTimeFormatter);
-
                         Integer price = 0;
                         String minimumPriceS = (String) minimumPrice;
                         String parsedPrice = minimumPriceS.replace(",", "");
@@ -166,7 +158,16 @@ public class WizzWeekendsPriceV1 {
                         } else {
                             logger.error("Could not parse price: " + parsedPrice);
                         }
-                        rets.put(localDate, price);
+
+                        //date and time
+                        Object date = jsonObject.get("Date");
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm");
+
+                        for (Object flightObj : (JSONArray) jsonObject.get("Flights")) {
+                            Object stdObj = ((JSONObject) flightObj).get("STD");
+                            LocalDateTime localDateTime = LocalDateTime.parse((String) date + " " + (String) stdObj, dateTimeFormatter);
+                            rets.put(localDateTime, price);
+                        }
                     }
 
                 }
@@ -179,86 +180,95 @@ public class WizzWeekendsPriceV1 {
         return rets;
     }
 
-    private List<TravelOption> getTravelOptions(AIRPORT_NAME airport_name) {
-        ArrayList<TravelOption> rets = new ArrayList<>();
-        Map<LocalDate, Integer> priceFrom = new HashMap();
-        Map<LocalDate, Integer> priceTo = new HashMap();
+
+    private List<TravelOption> getTravelOptions(AirportName airportName) {
+        Map<LocalDateTime, Integer> priceFrom = new HashMap();
+        Map<LocalDateTime, Integer> priceTo = new HashMap();
 
         LocalDate localDate = LocalDate.now();
         for(int i = 0; i < 12; i ++){
             int month = localDate.getMonthValue();
             int year = localDate.getYear();
-            priceFrom.putAll(getPrices(AIRPORT_NAME.STAVANGER, airport_name, year, month));
-            priceTo.putAll(getPrices(airport_name, AIRPORT_NAME.STAVANGER, year, month));
+            priceFrom.putAll(getPrices(AirportName.STAVANGER, airportName, year, month));
+            priceTo.putAll(getPrices(airportName, AirportName.STAVANGER, year, month));
             localDate = localDate.plusMonths(1);
         }
 
-        for (LocalDate fromDate : priceFrom.keySet()) {
-            Integer fromPrice = priceFrom.get(fromDate);
+        return  filter(airportName, priceFrom, priceTo);
+    }
+
+    private List<TravelOption> filter(AirportName airport_name, Map<LocalDateTime, Integer> priceFrom, Map<LocalDateTime, Integer> priceTo) {
+        ArrayList<TravelOption> rets = new ArrayList<>();
+        for (LocalDateTime fromDateTime : priceFrom.keySet()) {
+            Integer fromPrice = priceFrom.get(fromDateTime);
             Integer toPrice = 0;
-            if(fromDate.getDayOfWeek() == DayOfWeek.THURSDAY ) {
-                LocalDate saturday = fromDate.plusDays(2);
+            if(fromDateTime.getDayOfWeek() == DayOfWeek.THURSDAY ) {
+                LocalDateTime saturday = fromDateTime.plusDays(2);
+//                toPrice = priceTo.get(saturday.);
+                if (toPrice != null) {
+                    rets.add(new TravelOption(airport_name, fromDateTime, saturday, fromPrice, toPrice));
+                }
+
+                LocalDateTime sunday = saturday.plusDays(1);
+                toPrice = priceTo.get(sunday);
+                if (toPrice != null) {
+                    rets.add(new TravelOption(airport_name, fromDateTime, sunday, fromPrice, toPrice));
+                }
+
+                LocalDateTime monday = sunday.plusDays(1);
+                toPrice = priceTo.get(monday);
+                if (toPrice != null) {
+                    rets.add(new TravelOption(airport_name, fromDateTime, monday, fromPrice, toPrice));
+                }
+            } else if(fromDateTime.getDayOfWeek() == DayOfWeek.FRIDAY ) {
+                LocalDateTime saturday = fromDateTime.plusDays(1);
                 toPrice = priceTo.get(saturday);
-                if (toPrice != null) {
-                    rets.add(new TravelOption(airport_name, fromDate, saturday, fromPrice, toPrice));
-                }
-
-                LocalDate sunday = saturday.plusDays(1);
-                toPrice = priceTo.get(sunday);
-                if (toPrice != null) {
-                    rets.add(new TravelOption(airport_name, fromDate, sunday, fromPrice, toPrice));
-                }
-
-                LocalDate monday = sunday.plusDays(1);
-                toPrice = priceTo.get(monday);
-                if (toPrice != null) {
-                    rets.add(new TravelOption(airport_name, fromDate, monday, fromPrice, toPrice));
-                }
-            } else if(fromDate.getDayOfWeek() == DayOfWeek.FRIDAY ) {
-                LocalDate saturday = fromDate.plusDays(1);
-                toPrice = priceTo.get(saturday);
                 if(toPrice != null){
-                    rets.add(new TravelOption(airport_name, fromDate, saturday, fromPrice, toPrice));
+                    rets.add(new TravelOption(airport_name, fromDateTime, saturday, fromPrice, toPrice));
                 }
 
-                LocalDate sunday = saturday.plusDays(1);
+                LocalDateTime sunday = saturday.plusDays(1);
                 toPrice = priceTo.get(sunday);
                 if(toPrice != null){
-                    rets.add(new TravelOption(airport_name, fromDate, sunday, fromPrice, toPrice));
+                    rets.add(new TravelOption(airport_name, fromDateTime, sunday, fromPrice, toPrice));
                 }
 
-                LocalDate monday = sunday.plusDays(1);
+                LocalDateTime monday = sunday.plusDays(1);
                 toPrice = priceTo.get(monday);
                 if (toPrice != null) {
-                    rets.add(new TravelOption(airport_name, fromDate, monday, fromPrice, toPrice));
+                    rets.add(new TravelOption(airport_name, fromDateTime, monday, fromPrice, toPrice));
                 }
-            } else if(fromDate.getDayOfWeek() == DayOfWeek.SATURDAY){
-                LocalDate sunday = fromDate.plusDays(1);
+            } else if(fromDateTime.getDayOfWeek() == DayOfWeek.SATURDAY){
+                LocalDateTime sunday = fromDateTime.plusDays(1);
                 toPrice = priceTo.get(sunday);
                 if(toPrice != null){
-                    rets.add(new TravelOption(airport_name, fromDate, sunday, fromPrice, toPrice));
+                    rets.add(new TravelOption(airport_name, fromDateTime, sunday, fromPrice, toPrice));
                 }
 
-                LocalDate monday = sunday.plusDays(1);
+                LocalDateTime monday = sunday.plusDays(1);
                 toPrice = priceTo.get(monday);
                 if (toPrice != null) {
-                    rets.add(new TravelOption(airport_name, fromDate, monday, fromPrice, toPrice));
+                    rets.add(new TravelOption(airport_name, fromDateTime, monday, fromPrice, toPrice));
                 }
             }
         }
         return rets;
     }
 
-    public static void main(String[] args) {
-        WizzWeekendsPriceV1 calculateWeekendsPrice = new WizzWeekendsPriceV1();
+    public static List<TravelOption> getTravelOptions() {
+        WizzWeekendsPrice wizzWeekendsPrice = new WizzWeekendsPrice();
         ArrayList<TravelOption> results = new ArrayList<>();
-        for (AIRPORT_NAME AIRPORT_name : AIRPORT_NAME.values()) {
-            results.addAll(calculateWeekendsPrice.getTravelOptions(AIRPORT_name));
+        for (AirportName airportName : AirportName.values()) {
+            results.addAll(wizzWeekendsPrice.getTravelOptions(airportName));
         }
+        return results;
+    }
 
+    public static void main(String[] args) {
+        List<TravelOption> travelOptions = getTravelOptions();
 
-        Collections.sort(results);
-        System.out.println(results);
+        Collections.sort(travelOptions);
+        System.out.println(travelOptions);
 
     }
 }
