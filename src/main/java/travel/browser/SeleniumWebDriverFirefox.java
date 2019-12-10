@@ -12,4 +12,9 @@ public class SeleniumWebDriverFirefox {
         System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/dev/null");
         return  new FirefoxDriver();
     }
+
+    public static void main(String []args) {
+
+    }
+
 }
